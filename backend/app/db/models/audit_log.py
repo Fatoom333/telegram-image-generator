@@ -1,11 +1,18 @@
+from __future__ import annotations
+
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import BigInteger, DateTime, String, func
+from sqlalchemy import BigInteger, DateTime, ForeignKey, String, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+
+if TYPE_CHECKING:
+    from app.db.models.user import User
 
 
 class AuditLog(Base):
@@ -19,12 +26,14 @@ class AuditLog(Base):
 
     actor_telegram_id: Mapped[int | None] = mapped_column(
         BigInteger,
+        ForeignKey("users.telegram_id", ondelete="SET NULL"),
         nullable=True,
         index=True,
     )
 
     target_telegram_id: Mapped[int | None] = mapped_column(
         BigInteger,
+        ForeignKey("users.telegram_id", ondelete="SET NULL"),
         nullable=True,
         index=True,
     )
@@ -37,4 +46,14 @@ class AuditLog(Base):
         server_default=func.now(),
         nullable=False,
         index=True,
+    )
+
+    actor: Mapped[User | None] = relationship(
+        back_populates="audit_logs_as_actor",
+        foreign_keys=[actor_telegram_id],
+    )
+
+    target: Mapped[User | None] = relationship(
+        back_populates="audit_logs_as_target",
+        foreign_keys=[target_telegram_id],
     )

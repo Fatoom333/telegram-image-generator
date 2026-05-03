@@ -1,13 +1,20 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import enum
 from datetime import datetime
 from uuid import UUID, uuid4
 
 from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, Integer, String, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
+if TYPE_CHECKING:
+    from app.db.models.generation import Generation
+    from app.db.models.user import User
 
 class CreditTransactionType(str, enum.Enum):
     GRANT = "grant"
@@ -56,4 +63,12 @@ class CreditTransaction(Base):
         server_default=func.now(),
         nullable=False,
         index=True,
+    )
+
+    user: Mapped[User] = relationship(
+        back_populates="credit_transactions",
+    )
+
+    generation: Mapped[Generation | None] = relationship(
+        back_populates="credit_transactions",
     )

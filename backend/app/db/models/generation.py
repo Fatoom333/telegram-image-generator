@@ -1,12 +1,21 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import enum
 from datetime import datetime
 from uuid import UUID, uuid4
 
 from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.db.models.credit_transaction import CreditTransaction
+    from app.db.models.generation_image import GenerationImage
+    from app.db.models.user import User
 
 class GenerationStatus(str, enum.Enum):
     CREATED = "created"
@@ -65,4 +74,17 @@ class Generation(Base):
         server_default=func.now(),
         onupdate=func.now(),
         nullable=False,
+    )
+
+    user: Mapped[User] = relationship(
+        back_populates="generations",
+    )
+
+    images: Mapped[list[GenerationImage]] = relationship(
+        back_populates="generation",
+        cascade="all, delete-orphan",
+    )
+
+    credit_transactions: Mapped[list[CreditTransaction]] = relationship(
+        back_populates="generation",
     )

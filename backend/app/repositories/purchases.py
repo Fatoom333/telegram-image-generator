@@ -11,12 +11,12 @@ class PurchaseRepository:
         self._session = session
 
     async def create(
-        self,
-        telegram_id: int,
-        amount_rub: int,
-        credits: int,
-        provider: str,
-        status: PurchaseStatus = PurchaseStatus.CREATED,
+            self,
+            telegram_id: int,
+            amount_rub: int,
+            credits: int,
+            provider: str,
+            status: PurchaseStatus = PurchaseStatus.CREATED,
     ) -> Purchase:
         purchase = Purchase(
             telegram_id=telegram_id,
@@ -53,6 +53,19 @@ class PurchaseRepository:
         )
 
         return list(result.scalars().all())
+
+    async def set_provider_data(
+            self,
+            purchase: Purchase,
+            provider_payment_id: str | None,
+            payment_url: str | None,
+    ) -> Purchase:
+        purchase.provider_payment_id = provider_payment_id
+        purchase.payment_url = payment_url
+
+        await self._session.flush()
+
+        return purchase
 
     async def update_status(
         self,

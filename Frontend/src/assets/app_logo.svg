@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="78.383736mm"
+   height="77.932617mm"
+   viewBox="0 0 78.383736 77.932617"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   sodipodi:docname="test_logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.0396254"
+     inkscape:cx="152.45876"
+     inkscape:cy="313.09354"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#pattern20-1"
+       preserveAspectRatio="xMidYMid"
+       id="pattern2"
+       patternTransform="translate(340,140)"
+       x="0"
+       y="0" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="40"
+       height="40"
+       patternTransform="translate(340,140)"
+       preserveAspectRatio="xMidYMid"
+       style="fill:#2f218c"
+       id="pattern20-1"
+       inkscape:label="Abstract fill 2"
+       inkscape:collect="always"
+       inkscape:isstock="true">
+      <path
+         id="path18-2"
+         style="opacity:1;stroke-width:4.8561;stroke-linecap:square;paint-order:stroke markers fill;stop-color:#000000"
+         d="M 10,0 C 4.47715,0 0,4.47715 0,10 V 20 H 10 C 15.52285,20 20,15.52285 20,10 20,4.47715 15.52285,0 10,0 Z M 30,20 C 24.47715,20 20,15.52285 20,10 V 0 h 10 c 5.52285,0 10,4.47715 10,10 0,5.52285 -4.47715,10 -10,10 z m -20,0 c 5.52285,0 10,4.47715 10,10 V 40 H 10 C 4.47715,40 0,35.52285 0,30 0,24.47715 4.47715,20 10,20 Z m 20,20 c 5.52285,0 10,-4.47715 10,-10 V 20 H 30 c -5.52285,0 -10,4.47715 -10,10 0,5.52285 4.47715,10 10,10 z" />
+    </pattern>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-64.672541,-65.632662)">
+    <circle
+       style="fill:url(#pattern2);stroke:#00076f;stroke-width:0.564999"
+       id="path1"
+       cx="104.08997"
+       cy="104.59897"
+       r="38.683807" />
+    <text
+       xml:space="preserve"
+       style="font-stretch:condensed;font-size:19.7556px;font-family:Impact;-inkscape-font-specification:'Impact Condensed';writing-mode:lr-tb;direction:ltr;fill:#ffffff;stroke:#00076f;stroke-width:0.564999"
+       x="64.897163"
+       y="112.48843"
+       id="text2"><tspan
+         sodipodi:role="line"
+         id="tspan2"
+         style="stroke-width:0.565"
+         x="64.897163"
+         y="112.48843">test_logo</tspan></text>
+  </g>
+</svg>

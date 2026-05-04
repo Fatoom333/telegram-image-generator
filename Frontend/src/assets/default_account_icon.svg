@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="75.420204mm"
+   height="50.564999mm"
+   viewBox="0 0 75.420204 50.564999"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   sodipodi:docname="test_acc_icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.0396254"
+     inkscape:cx="39.437281"
+     inkscape:cy="-140.91614"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#Alternating Chevron"
+       id="pattern5"
+       patternTransform="scale(0.3)"
+       x="0"
+       y="0"
+       preserveAspectRatio="none" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="100"
+       height="100"
+       id="Alternating Chevron"
+       patternTransform="scale(0.3,0.3)"
+       inkscape:collect="always"
+       style="fill:#31209b"
+       inkscape:label="Alternating chevron"
+       inkscape:isstock="true">
+      <g
+         id="g42406">
+        <path
+           id="path42401"
+           style="fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none"
+           d="M 100,100 V 50 L 50,100 Z M 50,0 V 50 L 100,0 Z M 0,0 50,50 v 50 L 0,50 Z" />
+      </g>
+    </pattern>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-41.212692,-92.932154)">
+    <circle
+       style="fill:url(#pattern5);stroke:#2400c6;stroke-width:0.564999;stroke-opacity:1"
+       id="path1"
+       cx="78.767349"
+       cy="118.21465"
+       r="25" />
+    <text
+       xml:space="preserve"
+       style="font-stretch:condensed;font-size:19.7556px;font-family:Impact;-inkscape-font-specification:'Impact Condensed';writing-mode:lr-tb;direction:ltr;fill:#ffffff;stroke:#2400c6;stroke-width:0.564999;stroke-opacity:1"
+       x="40.974293"
+       y="124.95887"
+       id="text5"><tspan
+         sodipodi:role="line"
+         id="tspan5"
+         style="stroke-width:0.565"
+         x="40.974293"
+         y="124.95887">acc_icon</tspan></text>
+  </g>
+</svg>

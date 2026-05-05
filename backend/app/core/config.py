@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     alembic_database_url: str
     redis_url: str
 
+    storage_dir: str = "storage"
+    public_storage_url: str = "/media"
+
     telegram_bot_token: str
     admin_telegram_ids: str
 

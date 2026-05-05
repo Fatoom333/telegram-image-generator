@@ -60,14 +60,15 @@ class GenerationRepository:
         return result.scalar_one_or_none()
 
     async def list_by_user(
-        self,
-        telegram_id: int,
-        limit: int = 20,
-        offset: int = 0,
+            self,
+            telegram_id: int,
+            limit: int = 20,
+            offset: int = 0,
     ) -> list[Generation]:
         result = await self._session.execute(
             select(Generation)
             .where(Generation.telegram_id == telegram_id)
+            .options(selectinload(Generation.images))
             .order_by(Generation.created_at.desc())
             .limit(limit)
             .offset(offset)

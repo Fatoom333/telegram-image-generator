@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     storage_dir: str = "storage"
     public_storage_url: str = "/media"
 
+    mini_app_url: str
     telegram_bot_token: str
     admin_telegram_ids: str
 

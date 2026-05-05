@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     admin_telegram_ids: str
 
     nanobanano_api_key: str
+    lava_api_key: str
 
     model_config = SettingsConfigDict(
         env_file=(ROOT_DIR / ".env", BACKEND_DIR / ".env"),

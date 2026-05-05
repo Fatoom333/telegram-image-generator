@@ -29,7 +29,7 @@ class ModelCatalog:
         #     provider="replicate",
         #     model_name="flux-schnell",
         #     title="Flux Schnell",
-        #     text_cost_credits=1,
+        #     cost_credits=1,
         #     image_cost_credits=2,
         #     max_input_images=4,
         # )

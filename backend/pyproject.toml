@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Backend for Telegram image generator"
 requires-python = ">=3.12"
 dependencies = [
+    "aiogram>=3.13.0",
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.30.0",
     "sqlalchemy[asyncio]>=2.0.0",
@@ -13,7 +14,7 @@ dependencies = [
     "pydantic-settings>=2.4.0",
     "python-multipart>=0.0.9",
     "redis>=5.0.0",
-    "rq>=1.16.0"
+    "arq>=0.28.0",
 ]
 
 [project.optional-dependencies]

@@ -27,15 +27,14 @@ class GenerationService:
         self._model_catalog = ModelCatalog()
 
     async def create_generation(
-        self,
-        telegram_id: int,
-        prompt: str,
-        provider: str | None = None,
-        model_name: str | None = None,
-        input_image_paths: list[str] | None = None,
+            self,
+            telegram_id: int,
+            prompt: str,
+            provider: str | None = None,
+            model_name: str | None = None,
+            input_images_cnt: int = 0,
     ) -> Generation:
         normalized_prompt = prompt.strip()
-        input_image_paths = input_image_paths or []
 
         if not normalized_prompt:
             raise EmptyPromptError
@@ -45,7 +44,7 @@ class GenerationService:
             model_name=model_name,
         )
 
-        if len(input_image_paths) > selected_model.max_input_images:
+        if input_images_cnt > selected_model.max_input_images:
             raise TooManyInputImagesError
 
         user = await self._users.get_by_telegram_id(telegram_id)
@@ -59,14 +58,14 @@ class GenerationService:
         cost = self._model_catalog.calculate_cost(
             provider=selected_model.provider,
             model_name=selected_model.model_name,
-            input_images_cnt=len(input_image_paths),
+            input_images_cnt=input_images_cnt,
         )
 
         generation = await self._generations.create(
             telegram_id=telegram_id,
             prompt=normalized_prompt,
             cost_credits=cost,
-            input_images_cnt=len(input_image_paths),
+            input_images_cnt=input_images_cnt,
             provider=selected_model.provider,
             model_name=selected_model.model_name,
             status=GenerationStatus.QUEUED,
@@ -78,13 +77,6 @@ class GenerationService:
             generation_id=generation.id,
             reason="Image generation",
         )
-
-        for file_path in input_image_paths:
-            await self._generation_images.create(
-                generation_id=generation.id,
-                role=GenerationImageRole.INPUT,
-                file_path=file_path,
-            )
 
         return generation
 
@@ -204,3 +196,17 @@ class GenerationService:
             provider=provider,
             model_name=model_name,
         )
+
+    async def add_input_images(
+            self,
+            generation_id: UUID,
+            input_image_paths: list[str],
+    ) -> None:
+        generation = await self.get_generation(generation_id)
+
+        for file_path in input_image_paths:
+            await self._generation_images.create(
+                generation_id=generation.id,
+                role=GenerationImageRole.INPUT,
+                file_path=file_path,
+            )

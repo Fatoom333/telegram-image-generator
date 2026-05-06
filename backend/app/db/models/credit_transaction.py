@@ -6,7 +6,7 @@ import enum
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, Integer, String, func
+from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, Identity, Integer, String, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -31,6 +31,14 @@ class CreditTransaction(Base):
         PG_UUID(as_uuid=True),
         primary_key=True,
         default=uuid4,
+    )
+
+    sequence_id: Mapped[int] = mapped_column(
+        BigInteger,
+        Identity(),
+        unique=True,
+        nullable=False,
+        index=True,
     )
 
     telegram_id: Mapped[int] = mapped_column(

@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     alembic_database_url: str
     redis_url: str
 
+    test_database_url: str | None = None
+    test_alembic_database_url: str | None = None
+
     storage_dir: str = "storage"
     public_storage_url: str = "/media"
 

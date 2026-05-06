@@ -44,7 +44,7 @@ class CreditRepository:
         result = await self._session.execute(
             select(CreditTransaction)
             .where(CreditTransaction.telegram_id == telegram_id)
-            .order_by(CreditTransaction.created_at.desc())
+            .order_by(CreditTransaction.sequence_id.desc())
             .limit(limit)
             .offset(offset)
         )

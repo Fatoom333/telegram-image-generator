@@ -8,6 +8,7 @@ from app.ai.registry import AIRegistry
 from app.repositories.generation_images import GenerationImageRepository
 from app.services.exceptions import AIProviderError, AIProviderNotFoundError, AIModelNotFoundError
 from app.services.generations import GenerationService
+from app.db.models.generation_image import GenerationImageRole
 
 
 class AIExecutionService:
@@ -39,7 +40,7 @@ class AIExecutionService:
         input_image_paths = [
             image.file_path
             for image in input_images
-            if image.role.value == "input"
+            if image.role == GenerationImageRole.INPUT
         ]
 
         adapter = self._ai_registry.get_adapter(generation.provider)

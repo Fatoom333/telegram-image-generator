@@ -14,7 +14,7 @@ export function HistoryList({generations, onSelect}: Props) {
     }, [generations]);  
     return (
         <div className="history-list-card card">
-            <h2>История</h2>
+            <h2><span className="bold-text">История</span></h2>
             {generations.length === 0 ? (
                 <EmptyStateIndicator
                     title="Пока нет генераций"

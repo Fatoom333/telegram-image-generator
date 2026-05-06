@@ -1,5 +1,4 @@
 import type { MeResponse } from "../api/types";
-import default_account_icon from "../assets/default_account_icon.png";
 
 type Props = {
     me?: MeResponse | null;
@@ -13,17 +12,16 @@ export function HeaderAccount({me, loading, onReplenishBalance} : Props) {
     const balance = me?.balance ?? 0;
     return (
         <div className="header-account-card header-card">
-            <div className="header-account-info">
-                <div className="header-account-fields">
-                    <p>ID: {id}</p>
-                    <p>Имя: {name}</p>
-                    <p>Баланс: {balance}</p>
+            <div className="header-account-container">
+                <div className="header-account-info">
+                    <p><span className="bold-text">ID: </span>{id}</p>
+                    <p><span className="bold-text">Имя: </span>{name}</p>
+                    <p><span className="bold-text">Баланс: </span>{balance}</p>
                 </div>
-                <img className="header-account-icon" src={default_account_icon} alt="Account icon"/>
+                <button className="header-account-replenish-button" onClick={onReplenishBalance} disabled={loading}>
+                    {loading ? "Пополнение..." : "Пополнить"}
+                </button>
             </div>
-            <button className="header-account-replenish-button" onClick={onReplenishBalance} disabled={loading}>
-                {loading ? "Пополнение..." : "Пополнить"}
-            </button>
         </div>
     );
 }

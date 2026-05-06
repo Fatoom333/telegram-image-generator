@@ -11,7 +11,7 @@ export function GenerationForm({placeholderText, prompt, setPrompt, onSubmit, se
     return (
         <div className="generation-form-card card">
             <div className="generation-form-textarea-container">
-                <p>Новая генерация</p>
+                <p><span className="bold-text">Новая генерация</span></p>
                 <textarea 
                     className="generation-form-textarea" 
                     placeholder={placeholderText} 
@@ -20,7 +20,7 @@ export function GenerationForm({placeholderText, prompt, setPrompt, onSubmit, se
                 />
             </div>
             <div className="generation-form-file-input-container">
-                <p>Фото (опц.)</p>
+                <p><span className="bold-text">Фото (опц.)</span></p>
                 {/* add code for multiple file choices later*/}
                 <input className="generation-form-file-input" type="file" accept=".jpg,.jpeg,.png,.webp" onChange={(e) => setFile(e.target.files?.[0])}/>
             </div>

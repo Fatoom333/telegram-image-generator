@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.queue.generation import enqueue_generation_task
 from app.api.deps import get_current_user
 from app.core.database import get_db_session
 from app.db.models.user import User
@@ -62,6 +63,10 @@ async def create_generation(
                 telegram_id=current_user.telegram_id,
             )
 
+            generation_id = generation.id
+
+        await enqueue_generation_task(generation_id)
+
         return _generation_to_response(generation, storage)
 
     except EmptyPromptError:
@@ -94,7 +99,7 @@ async def create_generation(
             detail="User is banned",
         )
 
-
+    
 @router.get("", response_model=list[GenerationResponse])
 async def list_generations(
     limit: int = 20,

@@ -64,7 +64,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     image: tig_backend:latest
-    container_name: tig_worker
+    scale: 3
     restart: unless-stopped
     env_file:
       - .env

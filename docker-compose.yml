@@ -32,7 +32,7 @@ services:
       retries: 10
     networks:
       - tig_network
-    
+
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: tig_pgadmin
@@ -134,6 +134,7 @@ volumes:
   tig_postgres_data:
   tig_redis_data:
   tig_storage:
+  tig_pgadmin_data:
 
 networks:
   tig_network:

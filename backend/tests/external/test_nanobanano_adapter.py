@@ -1,4 +1,4 @@
-import os
+from uuid import uuid4
 
 import pytest
 
@@ -6,24 +6,19 @@ from app.ai.adapters.nanobanano import NanoBananoAdapter
 from app.ai.base import GenerateImageInput
 
 
-@pytest.mark.external
-@pytest.mark.skipif(
-    os.getenv("RUN_EXTERNAL_TESTS") != "true",
-    reason="External tests are disabled",
-)
-@pytest.mark.skipif(
-    not os.getenv("NANOBANANO_API_KEY"),
-    reason="NANOBANANO_API_KEY is not configured",
-)
-async def test_nanobanano_adapter_real_request() -> None:
+pytestmark = [pytest.mark.asyncio, pytest.mark.external]
+
+
+async def test_nanobanano_text_to_image_smoke() -> None:
     adapter = NanoBananoAdapter()
 
     result = await adapter.generate_image(
         GenerateImageInput(
-            prompt="cute corgi wizard, fantasy style",
+            generation_id=uuid4(),
+            prompt="A cute banana astronaut, 3d render, clean background",
             input_image_paths=[],
-            model_name="nanobanano-v1",
+            model_name="gemini-2.5-flash-image",
         )
     )
 
-    assert len(result.output_image_paths) > 0
+    assert result.output_image_paths

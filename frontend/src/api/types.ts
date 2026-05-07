@@ -1,10 +1,11 @@
 export type GenerationStatus = "pending" | "in_progress" | "completed" | "failed";
 
 export interface MeResponse {
-    id: number;
-    firstName: string;
+    tgId: number;
     username?: string;
-    balance: number;
+    firstName?: string;
+    credits: number;
+    isBanned: boolean;
 }
 
 export interface Generation {

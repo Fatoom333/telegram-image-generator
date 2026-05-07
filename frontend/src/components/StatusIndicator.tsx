@@ -1,9 +1,8 @@
 import type { GenerationStatus } from "../api/types";
 
 const statusTexts: Record<GenerationStatus, string> = {
-    pending: "Отправляем...",
-    in_progress: "В процессе",
-    completed: "Готово",
+    query: "Ожидаем",
+    successful: "Готово",
     failed: "Ошибка"
 };
 

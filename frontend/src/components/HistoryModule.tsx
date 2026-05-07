@@ -1,14 +1,14 @@
 import { HistoryList } from "./HistoryList";
 import { GenerationCard } from "./GenerationCard";
-import type { Generation } from "../api/types";
+import type { GenerationResponse } from "../api/types";
 import { useState } from "react";
 
 type Props = {
-    generations: Generation[];
+    generations: GenerationResponse[];
 };
 
 export function HistoryModule({ generations }: Props) {
-    const [selected, setSelected] = useState<Generation | null>(null);
+    const [selected, setSelected] = useState<GenerationResponse | null>(null);
     return (
         <>
             <HistoryList

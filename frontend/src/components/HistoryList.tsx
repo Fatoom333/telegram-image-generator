@@ -1,16 +1,16 @@
 import { useMemo } from "react";
-import type { Generation } from "../api/types";
+import type { GenerationResponse } from "../api/types";
 import { EmptyStateIndicator } from "./EmptyStateIndicator";
 import { StatusIndicator } from "./StatusIndicator";
 
 type Props = {
-    generations: Generation[];
-    onSelect: (generation: Generation) => void;
+    generations: GenerationResponse[];
+    onSelect: (generation: GenerationResponse) => void;
 }
 
 export function HistoryList({generations, onSelect}: Props) {
     const sortedGenerations = useMemo(() => {
-        return [...generations].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return [...generations].sort((a, b) => new Date(b.craeted_at).getTime() - new Date(a.craeted_at).getTime());
     }, [generations]);  
     return (
         <div className="history-list-card card">
@@ -26,7 +26,7 @@ export function HistoryList({generations, onSelect}: Props) {
                         <li key={generation.id} onClick={() => onSelect(generation)}>
                             <StatusIndicator status={generation.status}/>
                             <p>{generation.prompt}</p>
-                            <p>{new Date(generation.createdAt).toLocaleString("ru-RU")}</p>
+                            <p>{new Date(generation.craeted_at).toLocaleString("ru-RU")}</p>
                         </li>
                     ))}
                 </ul>

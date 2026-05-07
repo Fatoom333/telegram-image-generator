@@ -7,9 +7,9 @@ type Props = {
 };
 
 export function HeaderAccount({me, loading, onReplenishBalance} : Props) {
-    const id = me?.id ?? 1;
-    const name = me?.username ?? me?.firstName ?? "Пользователь";
-    const balance = me?.balance ?? 0;
+    const id = me?.telegram_id ?? 1;
+    const name = me?.username ?? me?.first_name ?? "Пользователь";
+    const balance = me?.credits ?? 0;
     return (
         <div className="header-account-card header-card">
             <div className="header-account-container">

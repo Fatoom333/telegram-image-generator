@@ -1,14 +1,16 @@
-import type { Generation } from "../api/types";
+import type { GenerationResponse } from "../api/types";
 import { StatusIndicator } from "./StatusIndicator";
 import CloseBtnIcon from "../assets/close_btn_icon.svg?react";
 import DownloadBtnIcon from "../assets/download_btn_icon.svg?react";
 
 type Props = {
-    generation: Generation;
+    generation: GenerationResponse;
     onClose: () => void;
 };
 
 export function GenerationCard({generation, onClose}: Props) {
+    const resultUrl = generation.images?.find((item) => item.role === "generated" && item.file_url)?.file_url ?? generation.images?.[0]?.file_url ?? null;
+
     return (
         <div className="generation-card card">
             <div className="generation-card-top">
@@ -24,16 +26,16 @@ export function GenerationCard({generation, onClose}: Props) {
             </div>
             
             <div className="generation-card-result">
-                {generation.resultUrl ? (
-                    <img className="generation-card-result-image" src={generation.resultUrl} alt="Generation result"/>
+                {resultUrl ? (
+                    <img className="generation-card-result-image" src={resultUrl} alt="Generation result"/>
                 ) : ( <p>Генерация недоступна</p> )}
 
                 <div className="generation-card-result-date-download">
-                    <p className="generation-card-date">Дата: {new Date(generation.createdAt).toLocaleString("ru-RU")}</p>
+                    <p className="generation-card-date">Дата: {new Date(generation.craeted_at).toLocaleString("ru-RU")}</p>
                     <a 
                         className="generation-card-download-btn btn" 
-                        href={generation.resultUrl ?? ""} 
-                        download={!!generation.resultUrl} 
+                        href={resultUrl ?? ""} 
+                        download={!!resultUrl} 
                         aria-label="Download">
                         <DownloadBtnIcon/>
                     </a>

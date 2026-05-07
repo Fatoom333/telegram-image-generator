@@ -18,7 +18,10 @@ class Settings(BaseSettings):
     telegram_bot_token: str
     admin_telegram_ids: str
 
-    nanobanano_api_key: str
+    nanobanano_project_id: str
+    nanobanano_location: str = "global"
+    nanobanano_api_key: str | None = None
+
     lava_api_key: str
 
     model_config = SettingsConfigDict(

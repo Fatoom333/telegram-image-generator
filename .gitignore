@@ -218,3 +218,4 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+/secrets/gen-lang-client-0282422381-b9a620ea9562.json

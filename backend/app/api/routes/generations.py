@@ -116,7 +116,7 @@ async def create_generation(
         )
 
     
-@router.get("", response_modeF=list[GenerationResponse])
+@router.get("", response_model=list[GenerationResponse])
 async def list_generations(
     limit: int = 20,
     offset: int = 0,

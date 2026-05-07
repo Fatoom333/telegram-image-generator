@@ -1,7 +1,9 @@
+from pathlib import Path
 from typing import Any, Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.queue.generation import enqueue_generation_task
@@ -67,7 +69,7 @@ async def create_generation(
 
         await enqueue_generation_task(generation_id)
 
-        return _generation_to_response(generation, storage)
+        return _generation_to_response(generation)
 
     except EmptyPromptError:
         raise HTTPException(
@@ -107,7 +109,6 @@ async def list_generations(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> list[GenerationResponse]:
-    storage = LocalFileStorage()
     generation_service = GenerationService(session)
 
     generations = await generation_service.list_user_generations(
@@ -117,7 +118,7 @@ async def list_generations(
     )
 
     return [
-        _generation_to_response(generation, storage)
+        _generation_to_response(generation)
         for generation in generations
     ]
 
@@ -128,6 +129,29 @@ async def get_generation(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_db_session),
 ) -> GenerationResponse:
+    generation_service = GenerationService(session)
+
+    try:
+        generation = await generation_service.get_generation_for_user(
+            generation_id=generation_id,
+            telegram_id=current_user.telegram_id,
+        )
+    except GenerationNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Generation not found",
+        )
+
+    return _generation_to_response(generation)
+
+
+@router.get("/{generation_id}/images/{image_id}")
+async def get_generation_image(
+    generation_id: UUID,
+    image_id: UUID,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> FileResponse:
     storage = LocalFileStorage()
     generation_service = GenerationService(session)
 
@@ -142,16 +166,58 @@ async def get_generation(
             detail="Generation not found",
         )
 
-    return _generation_to_response(generation, storage)
+    image = next(
+        (generation_image for generation_image in generation.images if generation_image.id == image_id),
+        None,
+    )
 
+    if image is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Image not found",
+        )
+
+    try:
+        file_path = storage.resolve_private_path(image.file_path)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid image path",
+        )
+
+    if not file_path.is_file():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Image file not found",
+        )
+
+    return FileResponse(
+        path=file_path,
+        media_type=image.mime_type or _guess_image_media_type(file_path),
+        filename=file_path.name,
+    )
 
 def _generation_to_response(
     generation: Any,
-    storage: LocalFileStorage,
 ) -> GenerationResponse:
     response = GenerationResponse.model_validate(generation)
 
     for image in response.images:
-        image.file_url = storage.to_public_url(image.file_path)
+        image.file_url = f"/api/generations/{response.id}/images/{image.id}"
 
     return response
+
+
+def _guess_image_media_type(file_path: Path) -> str:
+    suffix = file_path.suffix.lower()
+
+    if suffix in {".jpg", ".jpeg"}:
+        return "image/jpeg"
+
+    if suffix == ".png":
+        return "image/png"
+
+    if suffix == ".webp":
+        return "image/webp"
+
+    return "application/octet-stream"

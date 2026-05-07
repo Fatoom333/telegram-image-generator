@@ -48,6 +48,7 @@ class AIExecutionService:
         try:
             result = await adapter.generate_image(
                 GenerateImageInput(
+                    generation_id=generation.id,
                     prompt=generation.prompt,
                     input_image_paths=input_image_paths,
                     model_name=generation.model_name,

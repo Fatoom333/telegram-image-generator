@@ -34,12 +34,28 @@ class ModelCatalog:
         #     max_input_images=4,
         # )
         self._models: dict[tuple[str, str], AIModel] = {
-            ("nanobanano", "nanobanano-v1"): AIModel(
+            ("nanobanano", "gemini-2.5-flash-image"): AIModel(
                 provider="nanobanano",
-                model_name="nanobanano-v1",
-                title="NanoBanano v1",
+                model_name="gemini-2.5-flash-image",
+                title="NanoBanano",
                 cost_credits=1,
                 image_cost_credits=2,
+                max_input_images=4,
+            ),
+            ("nanobanano", "gemini-3.1-flash-image-preview"): AIModel(
+                provider="nanobanano",
+                model_name="gemini-3.1-flash-image-preview",
+                title="NanoBanano 2",
+                cost_credits=2,
+                image_cost_credits=3,
+                max_input_images=4,
+            ),
+            ("nanobanano", "gemini-3-pro-image-preview"): AIModel(
+                provider="nanobanano",
+                model_name="gemini-3-pro-image-preview",
+                title="NanoBanano Pro",
+                cost_credits=3,
+                image_cost_credits=4,
                 max_input_images=4,
             ),
         }
@@ -49,7 +65,7 @@ class ModelCatalog:
         # GenerationService возьмёт именно эту модель.
         #
         # Чтобы поменять дефолтную модель, укажи другой ключ из self._models.
-        self._default_model = self._models[("nanobanano", "nanobanano-v1")]
+        self._default_model = self._models[("nanobanano", "gemini-2.5-flash-image")]
 
     def get_default_model(self) -> AIModel:
         return self._default_model

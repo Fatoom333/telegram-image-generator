@@ -7,9 +7,7 @@ from pydantic import BaseModel, ConfigDict
 class GenerationImageResponse(BaseModel):
     id: UUID
     role: str
-    file_path: str
     file_url: str | None = None
-    telegram_file_id: str | None
     mime_type: str | None
     created_at: datetime
 

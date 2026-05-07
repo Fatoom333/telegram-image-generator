@@ -15,7 +15,7 @@ body {
   color: #ffffff;
 }
 
-html, body, #root {
+html, body, #root { /* add color variables later */
   width: 100%;
   height: 100%;
 }

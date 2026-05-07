@@ -22,7 +22,6 @@ class LocalFileStorage:
 
         for index, file in enumerate(files, start=1):
             extension = self._get_extension(file.filename)
-
             file_name = f"input_{index}{extension}"
             file_path = generation_dir / file_name
 
@@ -34,11 +33,14 @@ class LocalFileStorage:
 
         return saved_paths
 
-    def to_public_url(
-        self,
-        relative_path: str,
-    ) -> str:
-        return f"{settings.public_storage_url}/{relative_path}"
+    def resolve_private_path(self, relative_path: str) -> Path:
+        storage_root = self._storage_root.resolve()
+        file_path = (storage_root / relative_path).resolve()
+
+        if storage_root not in file_path.parents and file_path != storage_root:
+            raise ValueError("Invalid file path")
+
+        return file_path
 
     def _get_extension(
         self,

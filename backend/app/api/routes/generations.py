@@ -25,6 +25,8 @@ from app.storage.local import LocalFileStorage
 
 router = APIRouter(prefix="/generations", tags=["generations"])
 
+MAX_REFERENCE_IMAGES = 2
+
 
 @router.post("", response_model=GenerationResponse)
 async def create_generation(
@@ -37,6 +39,12 @@ async def create_generation(
 ) -> GenerationResponse:
     images = images or []
     storage = LocalFileStorage()
+
+    if len(images) > MAX_REFERENCE_IMAGES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Too many reference images. Maximum is {MAX_REFERENCE_IMAGES}",
+        )
 
     try:
         async with session.begin():
@@ -83,6 +91,12 @@ async def create_generation(
             detail="Too many input images",
         )
 
+    except ValueError as error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(error),
+        )
+
     except AIModelNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -102,7 +116,7 @@ async def create_generation(
         )
 
     
-@router.get("", response_model=list[GenerationResponse])
+@router.get("", response_modeF=list[GenerationResponse])
 async def list_generations(
     limit: int = 20,
     offset: int = 0,

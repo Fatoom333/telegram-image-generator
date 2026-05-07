@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from uuid import UUID
 
 
 @dataclass(frozen=True)
 class GenerateImageInput:
+    generation_id: UUID
     prompt: str
     input_image_paths: list[str]
     model_name: str

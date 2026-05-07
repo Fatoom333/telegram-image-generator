@@ -1,4 +1,18 @@
 services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: tig_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+      - frontend
+    networks:
+      - tig_network
+
   postgres:
     image: postgres:17
     container_name: tig_postgres
@@ -7,25 +21,94 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "${POSTGRES_PORT}:5432"
     volumes:
       - tig_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - tig_network
 
   redis:
     image: redis:7-alpine
     container_name: tig_redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     volumes:
       - tig_redis_data:/data
+    networks:
+      - tig_network
+
+  api:
+    build:
+      context: ./backend
+    image: tig_backend:latest
+    container_name: tig_api
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - tig_storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - tig_network
+
+  worker:
+    image: tig_backend:latest
+    container_name: tig_worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: python -m app.worker
+    volumes:
+      - tig_storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      api:
+        condition: service_started
+    networks:
+      - tig_network
+
+  bot:
+    image: tig_backend:latest
+    container_name: tig_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: python -m app.bot
+    depends_on:
+      api:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - tig_network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: tig_frontend
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+    networks:
+      - tig_network
 
 volumes:
   tig_postgres_data:
   tig_redis_data:
+  tig_storage:
+
+networks:
+  tig_network:
+    driver: bridge

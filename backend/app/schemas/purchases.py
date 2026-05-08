@@ -9,11 +9,16 @@ class TariffResponse(BaseModel):
     title: str
     amount_rub: int
     credits: int
-    provider: str
+
+
+class PaymentProviderResponse(BaseModel):
+    id: str
+    title: str
 
 
 class PurchaseCreateRequest(BaseModel):
     tariff_id: str
+    provider: str
 
 
 class PurchaseResponse(BaseModel):

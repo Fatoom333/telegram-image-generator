@@ -49,7 +49,11 @@ export type TariffResponse = {
   title: string;
   amount_rub: number;
   credits: number;
-  provider: string;
+};
+
+export type PaymentProviderResponse = {
+  id: string;
+  title: string;
 };
 
 export type PurchaseResponse = {

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import logoUrl from "./assets/small_dark_logo.png";
 import type { FormEvent } from "react";
 import {
   absoluteApiUrl,
@@ -17,6 +16,7 @@ import type {
   TariffResponse,
   UserResponse,
 } from "./api/types";
+import logoUrl from "./assets/small_dark_logo.png";
 import "./index.css";
 
 const MAX_REFERENCE_IMAGES = 2;
@@ -55,7 +55,9 @@ function App() {
 
   useEffect(() => {
     const hasActiveGeneration = generations.some((generation) => {
-      return ["queued", "processing", "pending", "running"].includes(generation.status.toLowerCase());
+      return ["created", "queued", "processing", "pending", "running"].includes(
+        generation.status.toLowerCase(),
+      );
     });
 
     if (!hasActiveGeneration) {
@@ -118,7 +120,6 @@ function App() {
 
   function handleFilesChange(nextFiles: FileList | null) {
     const pickedFiles = Array.from(nextFiles ?? []).slice(0, MAX_REFERENCE_IMAGES);
-
     setFiles(pickedFiles);
   }
 
@@ -151,7 +152,6 @@ function App() {
       }
 
       await refreshUser();
-
       setNotice("Генерация поставлена в очередь. История обновится автоматически.");
     } catch (apiError) {
       setError(getErrorMessage(apiError));
@@ -191,52 +191,52 @@ function App() {
       <BackgroundDecor />
 
       <section className="hero-card">
-  <div className="brand">
-    <div className="logo-mark" aria-hidden="true">
-      <img src={logoUrl} alt="NeiroBanana" />
-    </div>
+        <div className="brand">
+          <div className="logo-mark" aria-hidden="true">
+            <img src={logoUrl} alt="" />
+          </div>
 
-    <div className="brand-copy">
-      <h1>
-        Neiro<span>Banana</span>
-      </h1>
-      <p>Генерация фото и видео на базе NanoBanana!</p>
-    </div>
-  </div>
+          <div className="brand-copy">
+            <h1>
+              Neiro<span>Banana</span>
+            </h1>
+            <p>Генерация фото и видео на базе NanoBanana!</p>
+          </div>
+        </div>
 
-  <aside className="profile-card">
-    <div className="profile-info">
-      <p>ID: {user?.telegram_id ?? "—"}</p>
-      <p>
-        Имя:{" "}
-        <strong>
-          {user?.first_name || user?.username || (isBootLoading ? "Загрузка..." : "Пользователь")}
-        </strong>
-      </p>
-      <p>
-        Баланс: <strong>{user?.credits ?? "—"}</strong>
-      </p>
-    </div>
+        <aside className="profile-card">
+          <div className="profile-info">
+            <p>ID: {user?.telegram_id ?? "—"}</p>
+            <p>
+              Имя:{" "}
+              <strong>
+                {user?.first_name || user?.username || (isBootLoading ? "Загрузка..." : "Пользователь")}
+              </strong>
+            </p>
+            <p>
+              Баланс: <strong>{user?.credits ?? "—"}</strong>
+            </p>
+          </div>
 
-    <div className="profile-actions">
-      <button className="gold-button compact" disabled={isPaying} onClick={handlePay} type="button">
-        <span>▣</span>
-        {isPaying ? "..." : "Пополнить"}
-      </button>
+          <div className="profile-actions">
+            <button className="gold-button compact" disabled={isPaying} onClick={handlePay} type="button">
+              <span>▣</span>
+              {isPaying ? "..." : "Пополнить"}
+            </button>
 
-      <button
-        className="gold-button compact"
-        onClick={() => {
-          window.location.href = "/docs";
-        }}
-        type="button"
-      >
-        <span>♛</span>
-        Админ
-      </button>
-    </div>
-  </aside>
-</section>
+            <button
+              className="gold-button compact"
+              onClick={() => {
+                window.location.href = "/docs";
+              }}
+              type="button"
+            >
+              <span>♛</span>
+              Админ
+            </button>
+          </div>
+        </aside>
+      </section>
 
       <section className="glass-panel info-panel">
         <SectionHeading icon="?" title="Как пользоваться?" />
@@ -248,8 +248,8 @@ function App() {
           <mark>«Сгенерировать»</mark> и дождитесь результата в истории генераций.
         </p>
         <p>
-          Каждая генерация стоит <mark>{selectedModel?.cost_credits ?? 10} кредитов</mark>. Баланс можно пополнить в
-          любое время, нажав кнопку <mark>«Пополнить»</mark> справа вверху приложения.
+          Каждая генерация стоит <mark>{selectedModel?.cost_credits ?? 10} кредитов</mark>. Баланс можно
+          пополнить в любое время, нажав кнопку <mark>«Пополнить»</mark> справа вверху приложения.
         </p>
 
         <div className="info-illustration" aria-hidden="true">
@@ -406,9 +406,7 @@ function AuthImage({ src, alt }: { src: string; alt: string }) {
           headers.set("X-Telegram-Init-Data", initData);
         }
 
-        const response = await fetch(absoluteApiUrl(src), {
-          headers,
-        });
+        const response = await fetch(absoluteApiUrl(src), { headers });
 
         if (!response.ok) {
           throw new Error(`Image load failed: ${response.status}`);

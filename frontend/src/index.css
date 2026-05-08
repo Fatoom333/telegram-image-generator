@@ -13,7 +13,6 @@
 
   --bg: #050510;
   --panel: rgba(10, 12, 31, 0.82);
-  --panel-strong: rgba(13, 15, 39, 0.94);
   --stroke: rgba(173, 79, 255, 0.44);
   --stroke-soft: rgba(255, 255, 255, 0.09);
   --purple: #a748ff;
@@ -22,7 +21,6 @@
   --gold-deep: #ffb800;
   --text: #f8f6ff;
   --muted: #b8b1c7;
-  --muted-2: #817a93;
   --danger: #ff5d86;
   --success: #60e6b5;
 }
@@ -137,12 +135,12 @@ mark {
 }
 
 .hero-card {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
   align-items: center;
-  justify-content: space-between;
-  gap: 32px;
+  gap: 28px;
   min-height: 190px;
-  padding: 38px 36px;
+  padding: 32px 30px;
 }
 
 .hero-card::before,
@@ -158,61 +156,41 @@ mark {
 }
 
 .brand {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 22px;
+  min-width: 0;
+}
+
+.brand-copy {
+  min-width: 0;
 }
 
 .logo-mark {
   display: grid;
   place-items: center;
-  width: 146px;
-  height: 112px;
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at 80% 22%, #9747ff 0 7%, transparent 8%),
-    radial-gradient(circle at 65% 34%, #a553ff 0 5%, transparent 6%),
-    linear-gradient(135deg, #faf7ff, #cfc8d9);
-  box-shadow:
-    0 0 22px rgba(153, 64, 255, 0.85),
-    0 13px 30px rgba(0, 0, 0, 0.45);
+  width: 128px;
+  height: 128px;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 0 20px rgba(153, 64, 255, 0.75));
 }
 
-.banana {
-  position: relative;
-  width: 108px;
-  height: 66px;
-  border-radius: 0 0 90px 90px;
-  background: linear-gradient(180deg, #ffe55e, #ffbc00 55%, #e69a00);
-  transform: rotate(7deg);
-  box-shadow: 0 6px 0 #171018;
-}
-
-.banana::before {
-  position: absolute;
-  top: -13px;
-  right: -6px;
-  width: 20px;
-  height: 44px;
-  content: "";
-  border-radius: 999px;
-  background: #ffe75e;
-  transform: rotate(10deg);
-}
-
-.banana span {
-  position: absolute;
-  inset: 14px 11px auto 7px;
-  height: 20px;
-  border-radius: 0 0 999px 999px;
-  background: #6d34c7;
+.logo-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .brand h1 {
   margin: 0;
-  font-size: clamp(48px, 7vw, 72px);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: clamp(38px, 5.4vw, 68px);
   line-height: 0.96;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.025em;
   text-shadow: 0 0 22px rgba(255, 255, 255, 0.17);
 }
 
@@ -224,12 +202,14 @@ mark {
 .brand p {
   margin: 14px 0 0;
   color: var(--muted);
-  font-size: clamp(15px, 1.9vw, 22px);
+  font-size: clamp(15px, 1.75vw, 21px);
+  line-height: 1.3;
   letter-spacing: 0.02em;
-  line-height: 1.25;
 }
 
 .profile-card {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 18px;
   min-width: 0;
@@ -240,14 +220,14 @@ mark {
   box-shadow: 0 0 22px rgba(0, 0, 0, 0.28) inset;
 }
 
-.profile-info {
-  grid-area: info;
-}
-
 .profile-info p {
   margin: 0 0 14px;
   color: var(--muted);
   font-size: 18px;
+}
+
+.profile-info p:last-child {
+  margin-bottom: 0;
 }
 
 .profile-info strong {
@@ -302,6 +282,7 @@ mark {
 
 .section-heading {
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 18px;
@@ -564,19 +545,6 @@ mark {
   background: rgba(255, 212, 0, 0.11);
 }
 
-.image-placeholder {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  padding: 18px;
-  color: var(--muted);
-  text-align: center;
-  border: 1px solid rgba(167, 72, 255, 0.45);
-  border-radius: 12px;
-  background: rgba(2, 3, 14, 0.46);
-}
-
 .status-succeeded,
 .status-completed {
   color: var(--success);
@@ -610,14 +578,27 @@ mark {
   margin-top: 16px;
 }
 
-.image-grid img {
+.image-grid img,
+.image-placeholder {
   display: block;
   width: 100%;
   aspect-ratio: 1 / 1;
-  object-fit: cover;
   border: 1px solid rgba(167, 72, 255, 0.45);
   border-radius: 12px;
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28);
+}
+
+.image-grid img {
+  object-fit: cover;
+}
+
+.image-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  color: var(--muted);
+  text-align: center;
+  background: rgba(2, 3, 14, 0.46);
 }
 
 .sr-only {
@@ -651,7 +632,7 @@ mark {
   }
 
   .brand h1 {
-    font-size: 40px;
+    font-size: clamp(34px, 9vw, 46px);
     letter-spacing: 0.02em;
   }
 
@@ -683,6 +664,29 @@ mark {
 }
 
 @media (max-width: 560px) {
+  .app-shell {
+    width: min(100% - 14px, 430px);
+  }
+
+  .hero-card {
+    padding: 18px 16px;
+  }
+
+  .brand {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 80px;
+    height: 80px;
+  }
+
+  .brand h1 {
+    font-size: clamp(30px, 10vw, 38px);
+  }
+
   .glass-panel {
     padding: 20px 16px;
   }
@@ -697,7 +701,6 @@ mark {
     font-size: 22px;
   }
 
-  .profile-card,
   .profile-actions,
   .file-picker {
     grid-template-columns: 1fr;

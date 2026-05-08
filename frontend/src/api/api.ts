@@ -17,7 +17,7 @@ declare global {
         ready?: () => void;
         expand?: () => void;
         openLink?: (url: string) => void;
-        openInvoice?: (url: string, callback?: (status: string) => void) => void;
+        showAlert?: (message: string) => void;
       };
     };
   }
@@ -52,22 +52,25 @@ async function requestJson<T>(path: string, options?: RequestOptions): Promise<T
   });
 
   const rawText = await response.text();
-
-  let parsedBody: unknown = null;
-
-  if (rawText) {
-    try {
-      parsedBody = JSON.parse(rawText);
-    } catch {
-      parsedBody = rawText;
-    }
-  }
+  const parsedBody = parseResponseBody(rawText);
 
   if (!response.ok) {
     throw new Error(extractApiError(parsedBody, response.status));
   }
 
   return parsedBody as T;
+}
+
+function parseResponseBody(rawText: string): unknown {
+  if (!rawText) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(rawText);
+  } catch {
+    return rawText;
+  }
 }
 
 function extractApiError(body: unknown, status: number): string {

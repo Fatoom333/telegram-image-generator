@@ -1,10 +1,11 @@
 from contextlib import asynccontextmanager
+from collections.abc import AsyncIterator
 
 from aiogram import Bot
 from aiogram.types import Update
 from fastapi import FastAPI, Header, HTTPException, Request, status
 
-from app.api.routes import ai_models, balance, credits, generations, purchases, users
+from app.api.routes import admin, ai_models, balance, credits, generations, purchases, users
 from app.bot.dispatcher import create_dispatcher
 from app.core.config import BACKEND_DIR, settings
 
@@ -13,7 +14,7 @@ dispatcher = create_dispatcher()
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_application: FastAPI) -> AsyncIterator[None]:
     webhook_url = f"{settings.webhook_base_url}{settings.telegram_webhook_path}"
 
     await bot.set_webhook(
@@ -25,7 +26,9 @@ async def lifespan(app: FastAPI):
     yield
 
     await bot.delete_webhook(drop_pending_updates=False)
-    await bot.session.close()
+
+    if bot.session is not None:
+        await bot.session.close()
 
 
 app = FastAPI(
@@ -65,3 +68,4 @@ app.include_router(credits.router, prefix="/api")
 app.include_router(ai_models.router, prefix="/api")
 app.include_router(generations.router, prefix="/api")
 app.include_router(purchases.router, prefix="/api")
+app.include_router(admin.router, prefix="/api")

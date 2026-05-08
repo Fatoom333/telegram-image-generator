@@ -34,4 +34,16 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    @property
+    def admin_telegram_id_set(self) -> set[int]:
+        result: set[int] = set()
+
+        for raw_id in self.admin_telegram_ids.split(","):
+            raw_id = raw_id.strip()
+
+            if raw_id:
+                result.add(int(raw_id))
+
+        return result
+
 settings = Settings()

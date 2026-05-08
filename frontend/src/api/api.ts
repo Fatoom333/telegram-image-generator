@@ -2,6 +2,7 @@ import type {
   AIModelResponse,
   BalanceResponse,
   GenerationResponse,
+  PaymentProviderResponse,
   PurchaseResponse,
   TariffResponse,
   UserResponse,
@@ -121,6 +122,10 @@ export function getGeneration(generationId: string): Promise<GenerationResponse>
   return requestJson<GenerationResponse>(`/generations/${generationId}`);
 }
 
+export function listPaymentProviders(): Promise<PaymentProviderResponse[]> {
+  return requestJson<PaymentProviderResponse[]>("/purchases/providers", { auth: false });
+}
+
 export function createGeneration(params: {
   prompt: string;
   provider?: string | null;
@@ -153,13 +158,16 @@ export function listTariffs(): Promise<TariffResponse[]> {
   return requestJson<TariffResponse[]>("/purchases/tariffs", { auth: false });
 }
 
-export function createPurchase(tariffId: string): Promise<PurchaseResponse> {
+export function createPurchase(tariffId: string, provider: string): Promise<PurchaseResponse> {
   return requestJson<PurchaseResponse>("/purchases", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ tariff_id: tariffId }),
+    body: JSON.stringify({
+      tariff_id: tariffId,
+      provider,
+    }),
   });
 }
 

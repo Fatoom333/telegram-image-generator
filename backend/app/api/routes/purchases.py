@@ -4,9 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user
 from app.core.database import get_db_session
 from app.db.models.user import User
-from app.schemas.purchases import PurchaseCreateRequest, PurchaseResponse, TariffResponse
-from app.services.exceptions import PaymentProviderError, PaymentTariffNotFoundError
+from app.schemas.purchases import PaymentProviderResponse, PurchaseCreateRequest, PurchaseResponse, TariffResponse
+from app.services.exceptions import PaymentProviderError, PaymentProviderNotFoundError , PaymentTariffNotFoundError
 from app.services.purchases import PurchaseService
+
 
 
 router = APIRouter(prefix="/purchases", tags=["purchases"])
@@ -21,6 +22,14 @@ async def list_tariffs(
     return await purchase_service.list_tariffs()
 
 
+@router.get("/providers", response_model=list[PaymentProviderResponse])
+async def list_payment_providers(
+    session: AsyncSession = Depends(get_db_session),
+) -> list:
+    purchase_service = PurchaseService(session)
+    return await purchase_service.list_payment_providers()
+
+
 @router.post("", response_model=PurchaseResponse)
 async def create_purchase(
     request: PurchaseCreateRequest,
@@ -33,20 +42,23 @@ async def create_purchase(
             purchase = await purchase_service.create_purchase(
                 telegram_id=current_user.telegram_id,
                 tariff_id=request.tariff_id,
+                provider=request.provider,
             )
-
-        return purchase
-
+            return purchase
     except PaymentTariffNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Tariff not found",
         )
-
     except PaymentProviderError:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Payment provider error",
+        )
+    except PaymentProviderNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Payment provider not found",
         )
 
 

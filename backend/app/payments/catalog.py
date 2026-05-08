@@ -3,57 +3,52 @@ from dataclasses import dataclass
 from app.services.exceptions import PaymentTariffNotFoundError
 
 
-YOOKASSA_PROVIDER = "yookassa"
-
-
 @dataclass(frozen=True)
 class PaymentTariff:
     id: str
     title: str
     amount_rub: int
     credits: int
-    provider: str
 
 
-def make_yookassa_tariff(
+def make_tariff(
     *,
     title: str,
     amount_rub: int,
     credits: int,
 ) -> PaymentTariff:
     return PaymentTariff(
-        id=f"credits_{credits}_{YOOKASSA_PROVIDER}",
+        id=f"credits_{credits}",
         title=title,
         amount_rub=amount_rub,
         credits=credits,
-        provider=YOOKASSA_PROVIDER,
     )
 
 
 class PaymentCatalog:
     def __init__(self) -> None:
         tariffs = [
-            make_yookassa_tariff(
+            make_tariff(
                 title="Start",
                 amount_rub=99,
                 credits=150,
             ),
-            make_yookassa_tariff(
+            make_tariff(
                 title="Base",
                 amount_rub=199,
                 credits=330,
             ),
-            make_yookassa_tariff(
+            make_tariff(
                 title="Popular",
                 amount_rub=399,
                 credits=750,
             ),
-            make_yookassa_tariff(
+            make_tariff(
                 title="Advanced",
                 amount_rub=799,
                 credits=1650,
             ),
-            make_yookassa_tariff(
+            make_tariff(
                 title="Maximum",
                 amount_rub=1490,
                 credits=3200,

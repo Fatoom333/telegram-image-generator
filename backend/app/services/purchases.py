@@ -24,9 +24,10 @@ class PurchaseService:
         return self._payment_catalog.list_tariffs()
 
     async def create_purchase(
-        self,
-        telegram_id: int,
-        tariff_id: str,
+            self,
+            telegram_id: int,
+            tariff_id: str,
+            provider: str,
     ) -> Purchase:
         user = await self._users.get_by_telegram_id(telegram_id)
 
@@ -34,13 +35,13 @@ class PurchaseService:
             raise UserNotFoundError
 
         tariff = self._payment_catalog.get_tariff(tariff_id)
-        adapter = self._payment_registry.get_adapter(tariff.provider)
+        adapter = self._payment_registry.get_adapter(provider)
 
         purchase = await self._purchases.create(
             telegram_id=telegram_id,
             amount_rub=tariff.amount_rub,
             credits=tariff.credits,
-            provider=tariff.provider,
+            provider=provider,
             status=PurchaseStatus.CREATED,
         )
 
@@ -63,8 +64,8 @@ class PurchaseService:
         return purchase
 
     async def approve_purchase(
-        self,
-        purchase_id: UUID,
+            self,
+            purchase_id: UUID,
     ) -> Purchase:
         purchase = await self._purchases.get_by_id(purchase_id)
 
@@ -88,8 +89,8 @@ class PurchaseService:
         return purchase
 
     async def fail_purchase(
-        self,
-        purchase_id: UUID,
+            self,
+            purchase_id: UUID,
     ) -> Purchase:
         purchase = await self._purchases.get_by_id(purchase_id)
 
@@ -105,10 +106,10 @@ class PurchaseService:
         )
 
     async def list_user_purchases(
-        self,
-        telegram_id: int,
-        limit: int = 20,
-        offset: int = 0,
+            self,
+            telegram_id: int,
+            limit: int = 20,
+            offset: int = 0,
     ) -> list[Purchase]:
         user = await self._users.get_by_telegram_id(telegram_id)
 
@@ -120,3 +121,6 @@ class PurchaseService:
             limit=limit,
             offset=offset,
         )
+
+    async def list_payment_providers(self):
+        return self._payment_registry.list_providers()

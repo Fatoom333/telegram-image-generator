@@ -11,7 +11,7 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - api
-#      - frontend
+      - frontend
     networks:
       - tig_network
 
@@ -119,16 +119,16 @@ services:
     networks:
       - tig_network
 
-#  frontend:
-#    build:
-#      context: ./frontend
-#    container_name: tig_frontend
-#    restart: unless-stopped
-#    depends_on:
-#      api:
-#        condition: service_started
-#    networks:
-#      - tig_network
+  frontend:
+    build:
+      context: ./frontend
+    container_name: tig_frontend
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+    networks:
+      - tig_network
 
 volumes:
   tig_postgres_data:

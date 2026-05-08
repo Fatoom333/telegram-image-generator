@@ -28,6 +28,7 @@ class PurchaseRepository:
 
         self._session.add(purchase)
         await self._session.flush()
+        await self._session.refresh(purchase)
 
         return purchase
 
@@ -64,6 +65,7 @@ class PurchaseRepository:
         purchase.payment_url = payment_url
 
         await self._session.flush()
+        await self._session.refresh(purchase)
 
         return purchase
 
@@ -75,5 +77,6 @@ class PurchaseRepository:
         purchase.status = status
 
         await self._session.flush()
+        await self._session.refresh(purchase)
 
         return purchase

@@ -609,14 +609,26 @@ mark {
   background: rgba(2, 3, 14, 0.46);
 }
 
+.status-succeeded,
 .status-completed {
   color: var(--success);
   background: rgba(96, 230, 181, 0.1);
 }
 
+.status-running,
+.status-processing {
+  color: #d7b6ff;
+  background: rgba(167, 72, 255, 0.14);
+}
+
 .status-failed {
   color: var(--danger);
   background: rgba(255, 93, 134, 0.1);
+}
+
+.status-canceled {
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .generation-error {

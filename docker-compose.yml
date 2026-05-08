@@ -101,23 +101,23 @@ services:
     networks:
       - tig_network
 
-  bot:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    image: tig_backend:latest
-    container_name: tig_bot
-    restart: unless-stopped
-    env_file:
-      - .env
-    command: python -m app.bot.main
-    depends_on:
-      api:
-        condition: service_started
-      redis:
-        condition: service_started
-    networks:
-      - tig_network
+#  bot:
+#    build:
+#      context: ./backend
+#      dockerfile: Dockerfile
+#    image: tig_backend:latest
+#    container_name: tig_bot
+#    restart: unless-stopped
+#    env_file:
+#      - .env
+#    command: python -m app.bot.main
+#    depends_on:
+#      api:
+#        condition: service_started
+#      redis:
+#        condition: service_started
+#    networks:
+#      - tig_network
 
   frontend:
     build:

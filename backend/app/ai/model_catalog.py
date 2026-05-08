@@ -15,31 +15,14 @@ class AIModel:
 
 class ModelCatalog:
     def __init__(self) -> None:
-        # Здесь хранится список моделей, доступных пользователю.
-        #
-        # Как добавить новую модель:
-        # 1. Добавь новую запись в self._models.
-        # 2. Ключ должен быть tuple: (provider, model_name).
-        # 3. provider должен совпадать с provider_name нужного AIAdapter.
-        # 4. model_name должен быть тем именем модели, которое понимает adapter.
-        # 5. Укажи стоимость генерации и лимит input images.
-        #
-        # Пример:
-        # ("replicate", "flux-schnell"): AIModel(
-        #     provider="replicate",
-        #     model_name="flux-schnell",
-        #     title="Flux Schnell",
-        #     cost_credits=1,
-        #     image_cost_credits=2,
-        #     max_input_images=4,
-        # )
+
         self._models: dict[tuple[str, str], AIModel] = {
             ("nanobanano", "gemini-2.5-flash-image"): AIModel(
                 provider="nanobanano",
                 model_name="gemini-2.5-flash-image",
                 title="NanoBanano",
                 cost_credits=1,
-                image_cost_credits=2,
+                image_cost_credits=10,
                 max_input_images=4,
             ),
             ("nanobanano", "gemini-3.1-flash-image-preview"): AIModel(
@@ -47,7 +30,7 @@ class ModelCatalog:
                 model_name="gemini-3.1-flash-image-preview",
                 title="NanoBanano 2",
                 cost_credits=2,
-                image_cost_credits=3,
+                image_cost_credits=20,
                 max_input_images=4,
             ),
             ("nanobanano", "gemini-3-pro-image-preview"): AIModel(
@@ -55,16 +38,11 @@ class ModelCatalog:
                 model_name="gemini-3-pro-image-preview",
                 title="NanoBanano Pro",
                 cost_credits=3,
-                image_cost_credits=4,
+                image_cost_credits=40,
                 max_input_images=4,
             ),
         }
 
-        # Модель по умолчанию для MVP.
-        # Если frontend не передал provider/model_name,
-        # GenerationService возьмёт именно эту модель.
-        #
-        # Чтобы поменять дефолтную модель, укажи другой ключ из self._models.
         self._default_model = self._models[("nanobanano", "gemini-2.5-flash-image")]
 
     def get_default_model(self) -> AIModel:

@@ -457,12 +457,20 @@ function AuthImage({ src, alt }: { src: string; alt: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const normalizedStatus = status.toLowerCase();
-  const label =
-    normalizedStatus === "completed"
-      ? "Готово"
-      : normalizedStatus === "failed"
-        ? "Ошибка"
-        : "В очереди";
+
+  const labelByStatus: Record<string, string> = {
+    created: "Создано",
+    queued: "В очереди",
+    running: "Генерируется",
+    processing: "Генерируется",
+    pending: "В очереди",
+    succeeded: "Готово",
+    completed: "Готово",
+    failed: "Ошибка",
+    canceled: "Отменено",
+  };
+
+  const label = labelByStatus[normalizedStatus] ?? status;
 
   return <span className={`status-badge status-${normalizedStatus}`}>{label}</span>;
 }

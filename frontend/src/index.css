@@ -596,6 +596,19 @@ mark {
   background: rgba(255, 212, 0, 0.11);
 }
 
+.image-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 18px;
+  color: var(--muted);
+  text-align: center;
+  border: 1px solid rgba(167, 72, 255, 0.45);
+  border-radius: 12px;
+  background: rgba(2, 3, 14, 0.46);
+}
+
 .status-completed {
   color: var(--success);
   background: rgba(96, 230, 181, 0.1);

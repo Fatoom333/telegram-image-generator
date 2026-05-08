@@ -382,7 +382,7 @@ function GenerationCard({ generation }: { generation: GenerationResponse }) {
               rel="noreferrer"
               target="_blank"
             >
-              <img alt={generation.prompt} src={image.file_url ? absoluteApiUrl(image.file_url) : ""} />
+              {image.file_url ? <AuthImage alt={generation.prompt} src={image.file_url} /> : null}
             </a>
           ))}
         </div>
@@ -391,6 +391,68 @@ function GenerationCard({ generation }: { generation: GenerationResponse }) {
       )}
     </article>
   );
+}
+
+function AuthImage({ src, alt }: { src: string; alt: string }) {
+  const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const [isFailed, setIsFailed] = useState(false);
+
+  useEffect(() => {
+    let isCancelled = false;
+    let createdUrl: string | null = null;
+
+    async function loadImage() {
+      setIsFailed(false);
+
+      try {
+        const headers = new Headers();
+        const initData = window.Telegram?.WebApp?.initData ?? "";
+
+        if (initData) {
+          headers.set("X-Telegram-Init-Data", initData);
+        }
+
+        const response = await fetch(absoluteApiUrl(src), {
+          headers,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Image load failed: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        createdUrl = URL.createObjectURL(blob);
+
+        if (!isCancelled) {
+          setObjectUrl(createdUrl);
+        }
+      } catch {
+        if (!isCancelled) {
+          setIsFailed(true);
+        }
+      }
+    }
+
+    void loadImage();
+
+    return () => {
+      isCancelled = true;
+
+      if (createdUrl) {
+        URL.revokeObjectURL(createdUrl);
+      }
+    };
+  }, [src]);
+
+  if (isFailed) {
+    return <div className="image-placeholder">Не удалось загрузить изображение</div>;
+  }
+
+  if (!objectUrl) {
+    return <div className="image-placeholder">Загрузка...</div>;
+  }
+
+  return <img alt={alt} src={objectUrl} />;
 }
 
 function StatusBadge({ status }: { status: string }) {

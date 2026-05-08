@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import logoUrl from "./assets/small_dark_logo.png";
 import type { FormEvent } from "react";
 import {
   absoluteApiUrl,
@@ -190,59 +191,52 @@ function App() {
       <BackgroundDecor />
 
       <section className="hero-card">
-        <div className="brand">
-          <div className="logo-mark" aria-hidden="true">
-            <div className="banana">
-              <span />
-            </div>
-          </div>
+  <div className="brand">
+    <div className="logo-mark" aria-hidden="true">
+      <img src={logoUrl} alt="NeiroBanana" />
+    </div>
 
-          <div>
-            <h1>
-              Neiro<span>Banana</span>
-            </h1>
-            <p>Генерация фото и видео на базе NanoBanana!</p>
-          </div>
-        </div>
+    <div className="brand-copy">
+      <h1>
+        Neiro<span>Banana</span>
+      </h1>
+      <p>Генерация фото и видео на базе NanoBanana!</p>
+    </div>
+  </div>
 
-        <aside className="profile-card">
-          <div className="avatar-ring">
-            <span>N</span>
-            <span>B</span>
-          </div>
+  <aside className="profile-card">
+    <div className="profile-info">
+      <p>ID: {user?.telegram_id ?? "—"}</p>
+      <p>
+        Имя:{" "}
+        <strong>
+          {user?.first_name || user?.username || (isBootLoading ? "Загрузка..." : "Пользователь")}
+        </strong>
+      </p>
+      <p>
+        Баланс: <strong>{user?.credits ?? "—"}</strong>
+      </p>
+    </div>
 
-          <div className="profile-info">
-            <p>ID: {user?.telegram_id ?? "—"}</p>
-            <p>
-              Имя:{" "}
-              <strong>
-                {user?.first_name || user?.username || (isBootLoading ? "Загрузка..." : "Пользователь")}
-              </strong>
-            </p>
-            <p>
-              Баланс: <strong>{user?.credits ?? "—"}</strong>
-            </p>
-          </div>
+    <div className="profile-actions">
+      <button className="gold-button compact" disabled={isPaying} onClick={handlePay} type="button">
+        <span>▣</span>
+        {isPaying ? "..." : "Пополнить"}
+      </button>
 
-          <div className="profile-actions">
-            <button className="gold-button compact" disabled={isPaying} onClick={handlePay} type="button">
-              <span>▣</span>
-              {isPaying ? "..." : "Пополнить"}
-            </button>
-
-            <button
-              className="gold-button compact"
-              onClick={() => {
-                window.location.href = "/docs";
-              }}
-              type="button"
-            >
-              <span>♛</span>
-              Админ
-            </button>
-          </div>
-        </aside>
-      </section>
+      <button
+        className="gold-button compact"
+        onClick={() => {
+          window.location.href = "/docs";
+        }}
+        type="button"
+      >
+        <span>♛</span>
+        Админ
+      </button>
+    </div>
+  </aside>
+</section>
 
       <section className="glass-panel info-panel">
         <SectionHeading icon="?" title="Как пользоваться?" />

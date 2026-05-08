@@ -1,121 +1,141 @@
-import type { RequestOptions, GetRequestOptions, ErrorResponse, PurchaseResponse } from "./types";
-import type { MeResponse, BalanceResponse, TransactionResponse, AiModelResponse } from "./types";
-import type { GenerationResponse, GenerationRequest, TariffResponse, PurchaseRequest } from "./types";
+import type {
+  AIModelResponse,
+  BalanceResponse,
+  GenerationResponse,
+  PurchaseResponse,
+  TariffResponse,
+  UserResponse,
+} from "./types";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000"; // add url to env later
+const API_PREFIX = "/api";
 
-// unvirsal response handler for both GET and POST requests
+declare global {
+  interface Window {
+    Telegram?: {
+      WebApp?: {
+        initData?: string;
+        ready?: () => void;
+        expand?: () => void;
+        openLink?: (url: string) => void;
+        showAlert?: (message: string) => void;
+      };
+    };
+  }
+}
 
-async function handleResponse<T>(response: Response): Promise<T> {
-    if (!response.ok) {
-        const err: ErrorResponse = await response.json().catch(() => ({}));
-        let msg = `Error ${response.status}`;
-        if (err.detail) {
-            if (Array.isArray(err.detail)) {
-                msg = err.detail.map((e) => `${e.msg} (${e.loc.join('.')})`).join('; ');
-            } else if (typeof err.detail === 'string') {
-                msg = err.detail;
-            }
-        }
-        throw new Error(msg);
-    }
-    return response.json() as Promise<T>;
+type RequestOptions = RequestInit & {
+  auth?: boolean;
 };
 
-export async function apiGet<T>(endpoint: string, options: GetRequestOptions = {}): Promise<T> {
-    const headers: Record<string, string> = {};
-    if (options.token) {
-        headers['Authorization'] = `Bearer ${options.token}`;
-    }
-    let url = `${BASE_URL}${endpoint}`;
-    if (options.params) {
-        const queryParams = new URLSearchParams();
-        Object.entries(options.params).forEach(([key, value]) => {
-            if (value !== undefined) {
-                queryParams.append(key, String(value));
-            }
-        });
-        const qs = queryParams.toString();
-        if (qs) {
-            url += `?${qs}`;
-        }
-    }
-    const response = await fetch(url, { method: 'GET', headers });
-    return handleResponse<T>(response);
-};
+function getTelegramInitData(): string {
+  return window.Telegram?.WebApp?.initData ?? "";
+}
 
-export async function apiPost<T>(endpoint: string, body: unknown, options: RequestOptions = {}): Promise<T> {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (options.token) {
-        headers['Authorization'] = `Bearer ${options.token}`;
-    }
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(body)
-    });
-    return handleResponse<T>(response);
-};
+function buildHeaders(options?: RequestOptions): Headers {
+  const headers = new Headers(options?.headers);
 
-// health check
-export const checkHealth = async (): Promise<boolean> => {
+  if (options?.auth !== false) {
+    const initData = getTelegramInitData();
+
+    if (initData) {
+      headers.set("X-Telegram-Init-Data", initData);
+    }
+  }
+
+  return headers;
+}
+
+async function requestJson<T>(path: string, options?: RequestOptions): Promise<T> {
+  const response = await fetch(`${API_PREFIX}${path}`, {
+    ...options,
+    headers: buildHeaders(options),
+  });
+
+  if (!response.ok) {
+    let message = `Ошибка API: ${response.status}`;
+
     try {
-        await apiGet<unknown>('/health');
-        return Promise.resolve(true);
+      const body = (await response.json()) as { detail?: string };
+      message = body.detail ?? message;
     } catch {
-        return Promise.resolve(false);
+      const text = await response.text();
+      message = text || message;
     }
-};
 
-// get current user info
-export const getMe = async (token: string): Promise<MeResponse> =>
-    apiGet<MeResponse>('/api/me', { token });
+    throw new Error(message);
+  }
 
-// get user balance info
-export const getBalance = async (token: string): Promise<BalanceResponse> =>
-    apiGet<BalanceResponse>('/api/balance', { token });
+  return (await response.json()) as T;
+}
 
-// get all credits transactions for current user
-export const getTransactions = async (token: string, limit: number, offset: number): Promise<TransactionResponse[]> =>
-    apiGet<TransactionResponse[]>('/api/credits/transactions', {
-        token,
-        params: { limit, offset }
-    });
+export function getMe(): Promise<UserResponse> {
+  return requestJson<UserResponse>("/me");
+}
 
-// get all ai models
-export const getModels = async (): Promise<AiModelResponse[]> =>
-    apiGet<AiModelResponse[]>('/api/ai/models');
+export function getBalance(): Promise<BalanceResponse> {
+  return requestJson<BalanceResponse>("/balance");
+}
 
-// create generation
-export const postGeneration = async (token: string, generationRequest: GenerationRequest): Promise<GenerationResponse> =>
-    apiPost<GenerationResponse>('/api/generations', generationRequest, { token });
+export function listModels(): Promise<AIModelResponse[]> {
+  return requestJson<AIModelResponse[]>("/ai/models", { auth: false });
+}
 
-// get generation list
-export const getGenerations = async (token: string, limit: number, offset: number): Promise<GenerationResponse[]> =>
-    apiGet<GenerationResponse[]>('/api/generations', {
-        token,
-        params: { limit, offset }
-    });
+export function listGenerations(limit = 20, offset = 0): Promise<GenerationResponse[]> {
+  return requestJson<GenerationResponse[]>(`/generations?limit=${limit}&offset=${offset}`);
+}
 
-// get generation by id
-export const getGenerationById = async (token: string, generationId: string): Promise<GenerationResponse> =>
-    apiGet<GenerationResponse>(`/api/generations/${generationId}`, { token });
+export function getGeneration(generationId: string): Promise<GenerationResponse> {
+  return requestJson<GenerationResponse>(`/generations/${generationId}`);
+}
 
-// get generation image by generation id and image id
-export const getGenerationImage = async (token: string, generationId: string, imageId: string): Promise<string> =>
-    apiGet<string>(`/api/generations/${generationId}/images/${imageId}`, { token });
+export async function createGeneration(params: {
+  prompt: string;
+  provider?: string | null;
+  modelName?: string | null;
+  images?: File[];
+}): Promise<GenerationResponse> {
+  const formData = new FormData();
 
-// get tariffs list
-export const getTariffs = async (): Promise<TariffResponse[]> =>
-    apiGet<TariffResponse[]>(`/api/purchases/tariffs`);
+  formData.append("prompt", params.prompt.trim());
 
-// create a purchase
-export const postPurchase = async (token: string, purchaseRequest: PurchaseRequest): Promise<PurchaseResponse> =>
-    apiPost<PurchaseResponse>('/api/purchases', purchaseRequest, { token });
+  if (params.provider) {
+    formData.append("provider", params.provider);
+  }
 
-// get list of purchases
-export const getPurchases = async (token: string, limit: number, offset: number): Promise<PurchaseResponse[]> =>
-    apiGet<PurchaseResponse[]>('/api/purchases', {
-        token,
-        params: { limit, offset }
-    });
+  if (params.modelName) {
+    formData.append("model_name", params.modelName);
+  }
+
+  for (const image of params.images ?? []) {
+    formData.append("images", image);
+  }
+
+  return requestJson<GenerationResponse>("/generations", {
+    method: "POST",
+    body: formData,
+  });
+}
+
+export function listTariffs(): Promise<TariffResponse[]> {
+  return requestJson<TariffResponse[]>("/purchases/tariffs", { auth: false });
+}
+
+export function createPurchase(tariffId: string): Promise<PurchaseResponse> {
+  return requestJson<PurchaseResponse>("/purchases", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ tariff_id: tariffId }),
+  });
+}
+
+export function absoluteApiUrl(path: string): string {
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+  return `${window.location.origin}${normalizedPath}`;
+}

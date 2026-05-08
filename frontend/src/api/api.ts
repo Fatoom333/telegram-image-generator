@@ -17,7 +17,7 @@ declare global {
         ready?: () => void;
         expand?: () => void;
         openLink?: (url: string) => void;
-        showAlert?: (message: string) => void;
+        openInvoice?: (url: string, callback?: (status: string) => void) => void;
       };
     };
   }
@@ -51,21 +51,51 @@ async function requestJson<T>(path: string, options?: RequestOptions): Promise<T
     headers: buildHeaders(options),
   });
 
-  if (!response.ok) {
-    let message = `Ошибка API: ${response.status}`;
+  const rawText = await response.text();
 
+  let parsedBody: unknown = null;
+
+  if (rawText) {
     try {
-      const body = (await response.json()) as { detail?: string };
-      message = body.detail ?? message;
+      parsedBody = JSON.parse(rawText);
     } catch {
-      const text = await response.text();
-      message = text || message;
+      parsedBody = rawText;
     }
-
-    throw new Error(message);
   }
 
-  return (await response.json()) as T;
+  if (!response.ok) {
+    throw new Error(extractApiError(parsedBody, response.status));
+  }
+
+  return parsedBody as T;
+}
+
+function extractApiError(body: unknown, status: number): string {
+  if (typeof body === "string" && body.trim()) {
+    return body;
+  }
+
+  if (body && typeof body === "object" && "detail" in body) {
+    const detail = (body as { detail?: unknown }).detail;
+
+    if (typeof detail === "string") {
+      return detail;
+    }
+
+    if (Array.isArray(detail)) {
+      return detail
+        .map((item) => {
+          if (item && typeof item === "object" && "msg" in item) {
+            return String((item as { msg: unknown }).msg);
+          }
+
+          return String(item);
+        })
+        .join("; ");
+    }
+  }
+
+  return `Ошибка API: ${status}`;
 }
 
 export function getMe(): Promise<UserResponse> {
@@ -88,7 +118,7 @@ export function getGeneration(generationId: string): Promise<GenerationResponse>
   return requestJson<GenerationResponse>(`/generations/${generationId}`);
 }
 
-export async function createGeneration(params: {
+export function createGeneration(params: {
   prompt: string;
   provider?: string | null;
   modelName?: string | null;

@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     telegram_bot_token: str
     admin_telegram_ids: str
 
+    webhook_base_url: str
+    telegram_webhook_path: str = "/api/telegram/webhook"
+    telegram_webhook_secret: str
+
     nanobanano_project_id: str
     nanobanano_location: str = "global"
     nanobanano_api_key: str | None = None
@@ -29,5 +33,17 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    @property
+    def admin_telegram_id_set(self) -> set[int]:
+        result: set[int] = set()
+
+        for raw_id in self.admin_telegram_ids.split(","):
+            raw_id = raw_id.strip()
+
+            if raw_id:
+                result.add(int(raw_id))
+
+        return result
 
 settings = Settings()

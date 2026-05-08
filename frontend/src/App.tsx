@@ -8,11 +8,13 @@ import {
   getMe,
   listGenerations,
   listModels,
+  listPaymentProviders,
   listTariffs,
 } from "./api/api";
 import type {
   AIModelResponse,
   GenerationResponse,
+  PaymentProviderResponse,
   TariffResponse,
   UserResponse,
 } from "./api/types";
@@ -28,23 +30,26 @@ function App() {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [models, setModels] = useState<AIModelResponse[]>([]);
   const [selectedModelKey, setSelectedModelKey] = useState("");
+
   const [tariffs, setTariffs] = useState<TariffResponse[]>([]);
+  const [providers, setProviders] = useState<PaymentProviderResponse[]>([]);
+  const [selectedTariffId, setSelectedTariffId] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState("");
+
   const [generations, setGenerations] = useState<GenerationResponse[]>([]);
   const [prompt, setPrompt] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+
   const [isBootLoading, setIsBootLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
   const selectedModel = useMemo(() => {
     return models.find((model) => makeModelKey(model) === selectedModelKey) ?? null;
   }, [models, selectedModelKey]);
-
-  const activeTariff = useMemo(() => {
-    return tariffs[0] ?? null;
-  }, [tariffs]);
 
   useEffect(() => {
     window.Telegram?.WebApp?.ready?.();
@@ -78,20 +83,31 @@ function App() {
     setError(null);
 
     try {
-      const [loadedModels, loadedTariffs, loadedUser, loadedGenerations] = await Promise.all([
-        listModels(),
-        listTariffs(),
-        getMe(),
-        listGenerations(),
-      ]);
+      const [loadedModels, loadedTariffs, loadedProviders, loadedUser, loadedGenerations] =
+        await Promise.all([
+          listModels(),
+          listTariffs(),
+          listPaymentProviders(),
+          getMe(),
+          listGenerations(),
+        ]);
 
       setModels(loadedModels);
       setTariffs(loadedTariffs);
+      setProviders(loadedProviders);
       setUser(loadedUser);
       setGenerations(loadedGenerations);
 
       if (loadedModels.length > 0) {
         setSelectedModelKey(makeModelKey(loadedModels[0]));
+      }
+
+      if (loadedTariffs.length > 0) {
+        setSelectedTariffId(loadedTariffs[0].id);
+      }
+
+      if (loadedProviders.length > 0) {
+        setSelectedProvider(loadedProviders[0].id);
       }
     } catch (apiError) {
       setError(getErrorMessage(apiError));
@@ -161,16 +177,22 @@ function App() {
   }
 
   async function handlePay() {
-    if (!activeTariff) {
-      setError("Тарифы пока не настроены.");
+    if (!selectedTariffId) {
+      setError("Выберите тариф.");
+      return;
+    }
+
+    if (!selectedProvider) {
+      setError("Выберите способ оплаты.");
       return;
     }
 
     setIsPaying(true);
     setError(null);
+    setNotice(null);
 
     try {
-      const purchase = await createPurchase(activeTariff.id);
+      const purchase = await createPurchase(selectedTariffId, selectedProvider);
 
       if (purchase.payment_url) {
         window.Telegram?.WebApp?.openLink?.(purchase.payment_url);
@@ -178,7 +200,7 @@ function App() {
         return;
       }
 
-      setNotice("Покупка создана, но payment_url не вернулся от backend.");
+      setNotice("Заявка на пополнение создана. Администратор начислит кредиты после проверки оплаты.");
     } catch (apiError) {
       setError(getErrorMessage(apiError));
     } finally {
@@ -216,6 +238,44 @@ function App() {
             <p>
               Баланс: <strong>{user?.credits ?? "—"}</strong>
             </p>
+          </div>
+
+          <div className="payment-controls">
+            <label>
+              Тариф
+              <select
+                onChange={(event) => setSelectedTariffId(event.target.value)}
+                value={selectedTariffId}
+              >
+                {tariffs.length === 0 ? (
+                  <option value="">Тарифы не загружены</option>
+                ) : (
+                  tariffs.map((tariff) => (
+                    <option key={tariff.id} value={tariff.id}>
+                      {tariff.title} · {tariff.amount_rub} ₽
+                    </option>
+                  ))
+                )}
+              </select>
+            </label>
+
+            <label>
+              Способ оплаты
+              <select
+                onChange={(event) => setSelectedProvider(event.target.value)}
+                value={selectedProvider}
+              >
+                {providers.length === 0 ? (
+                  <option value="">Способы оплаты не загружены</option>
+                ) : (
+                  providers.map((provider) => (
+                    <option key={provider.id} value={provider.id}>
+                      {provider.title}
+                    </option>
+                  ))
+                )}
+              </select>
+            </label>
           </div>
 
           <div className="profile-actions">

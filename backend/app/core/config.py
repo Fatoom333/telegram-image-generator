@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     telegram_bot_token: str
     admin_telegram_ids: str
 
+    webhook_base_url: str
+    telegram_webhook_path: str = "/api/telegram/webhook"
+    telegram_webhook_secret: str
+
     nanobanano_project_id: str
     nanobanano_location: str = "global"
     nanobanano_api_key: str | None = None

@@ -4,6 +4,7 @@ export type UserResponse = {
   first_name: string | null;
   credits: number;
   is_banned: boolean;
+  is_admin: boolean;
 };
 
 export type BalanceResponse = {

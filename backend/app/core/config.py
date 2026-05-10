@@ -31,7 +31,9 @@ class Settings(BaseSettings):
     veo_output_gcs_bucket: str
     veo_output_gcs_prefix: str = "generated/video"
 
-    lava_api_key: str
+    yookassa_shop_id: str
+    yookassa_secret_key: str
+    yookassa_return_url: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=(ROOT_DIR / ".env", BACKEND_DIR / ".env"),

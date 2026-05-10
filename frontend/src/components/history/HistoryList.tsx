@@ -11,7 +11,8 @@ type Props = {
 };
 
 export function HistoryList({ generations, isBootLoading = false }: Props) {
-    const [viewImage, setViewImage] = useState<string | null>(null);
+    const [viewImageUrl, setViewImageUrl] = useState<string | null>(null);
+    const [viewVideoUrl, setViewVideoUrl] = useState<string | null>(null);
     if (isBootLoading) {
         return (
             <div className="empty-state">
@@ -24,7 +25,6 @@ export function HistoryList({ generations, isBootLoading = false }: Props) {
     if (generations.length === 0) {
         return (
             <div className="empty-state">
-                <div className="folder-icon">✦</div>
                 <h2>Пока нет генераций</h2>
                 <p>Самое время это исправить!</p>
             </div>
@@ -41,27 +41,52 @@ export function HistoryList({ generations, isBootLoading = false }: Props) {
                     <GenerationCard
                         key={gen.id}
                         generation={gen}
-                        onImageClick={(url) => setViewImage(url)}
+                        onImageClick={(url) => setViewImageUrl(url)}
+                        onVideoClick={(url) => setViewVideoUrl(url)}
                     />
                 ))}
             </div>
-            {viewImage && (
+            {viewImageUrl && (
                 <div
                     className="image-modal-overlay"
-                    onClick={() => setViewImage(null)}
+                    onClick={() => setViewImageUrl(null)}
                 >
                     <div
                         className="image-modal-card"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <img
-                            src={viewImage}
+                            src={viewImageUrl}
                             alt="Просмотр изображения"
                             className="image-modal-img"
                         />
                         <button
                             className="image-modal-close"
-                            onClick={() => setViewImage(null)}
+                            onClick={() => setViewImageUrl(null)}
+                        >
+                            <CloseBtnIcon/>
+                        </button>
+                    </div>
+                </div>
+            )}
+            {viewVideoUrl && (
+                <div
+                    className="image-modal-overlay"
+                    onClick={() => setViewVideoUrl(null)}
+                >
+                    <div
+                        className="image-modal-card"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <video
+                            src={viewVideoUrl}
+                            controls
+                            className="image-modal-img"
+                            style={{ maxWidth: "100%", maxHeight: "85vh" }}
+                        />
+                        <button
+                            className="image-modal-close"
+                            onClick={() => setViewVideoUrl(null)}
                         >
                             <CloseBtnIcon/>
                         </button>

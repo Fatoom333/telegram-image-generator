@@ -20,9 +20,10 @@ export type AIModelResponse = {
   max_input_images: number;
 };
 
-export type GenerationImageResponse = {
+export type GenerationAssetResponse = {
   id: string;
   role: string;
+  asset_type: string;
   file_url: string | null;
   mime_type: string | null;
   created_at: string;
@@ -42,7 +43,7 @@ export type GenerationResponse = {
   latency_ms: number | null;
   created_at: string;
   updated_at: string;
-  images: GenerationImageResponse[];
+  assets: GenerationAssetResponse[];
 };
 
 export type TariffResponse = {

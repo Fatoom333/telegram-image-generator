@@ -11,21 +11,25 @@ export function TariffSelector({tariffs, selectedTariffId, onTariffSelect}: Prop
         <div className="tariff">
             <label>
                 <span>Тариф</span>
-                <select
-                    className="tariff-selector"
-                    onChange={(event) => onTariffSelect(event.target.value)}
-                    value={selectedTariffId}
-                > {tariffs.length === 0 ? (
-                  <option value="">Тарифы не загружены</option>
-                ) : (
-                  tariffs.map((tariff) => (
-                    <option key={tariff.id} value={tariff.id}>
-						{tariff.title} · {tariff.amount_rub} ₽
-                    </option>
-                  	))
-                )}
-              </select>
             </label>
+            <div className="tariff-grid">
+                {tariffs.length === 0 ? (
+                    <p className="muted-text">Тарифы не загружены</p>
+                ) : (
+                    tariffs.map((tariff) => (
+                        <button
+                            key={tariff.id}
+                            type="button"
+                            className={`tariff-card ${selectedTariffId === tariff.id ? "tariff-card-selected" : ""}`}
+                            onClick={() => onTariffSelect(tariff.id)}
+                        >
+                            <span className="tariff-card-title">{tariff.title}</span>
+                            <span className="tariff-card-price">{tariff.amount_rub} ₽</span>
+                            <span className="tariff-card-credits">{tariff.credits} кр.</span>
+                        </button>
+                    ))
+                )}
+            </div>
         </div>
     );
 }

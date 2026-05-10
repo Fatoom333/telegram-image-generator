@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { absoluteApiUrl } from "../../api/api";
 
-export function AuthImage({ src, alt }: { src: string; alt: string }) {
+export function AuthImage({ src, alt, onLoad }: { src: string; alt: string; onLoad?: (objectUrl: string) => void }) {
     const [objectUrl, setObjectUrl] = useState<string | null>(null);
     const [isFailed, setIsFailed] = useState(false);
 
@@ -20,7 +20,10 @@ export function AuthImage({ src, alt }: { src: string; alt: string }) {
                 if (!res.ok) throw new Error();
                 const blob = await res.blob();
                 createdUrl = URL.createObjectURL(blob);
-                if (!cancelled) setObjectUrl(createdUrl);
+                if (!cancelled) {
+                    setObjectUrl(createdUrl);
+                    onLoad?.(createdUrl);
+                }
             } catch {
                 if (!cancelled) setIsFailed(true);
             }

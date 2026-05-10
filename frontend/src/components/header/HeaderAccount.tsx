@@ -30,7 +30,7 @@ export function HeaderAccount({
     return (
         <div className="header-account-card header-card">
             <div className="account-info">
-                <p>ID: <span className="bold">{user?.telegram_id ?? "-"}</span></p>
+                {/*<p>ID: <span className="bold">{user?.telegram_id ?? "-"}</span></p>*/}
                 <p>Имя: <span className="bold">{user?.first_name || user?.username || (loading ? "Загрузка..." : "Пользователь")}</span></p>
                 <p>Баланс: <span className="bold">{user?.credits ?? "-"}</span></p>
             </div>

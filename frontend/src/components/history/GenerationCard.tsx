@@ -2,6 +2,8 @@ import type { GenerationResponse } from "../../api/types";
 import { StatusBadge } from "../misc/StatusBadge";
 import { formatDate } from "../../misc/format_date";
 import { AuthImage } from "./AuthImage";
+import DownloadBtnIcon from "../../assets/download_btn_icon.svg?react";
+import { useState } from "react";
 
 type Props = {
     generation: GenerationResponse;
@@ -12,6 +14,16 @@ export function GenerationCard({ generation, onImageClick }: Props) {
     const outputImages = generation.images?.filter((img) => img.role !== "input") ?? [];
     const previewImage = outputImages.find((img) => img.file_url) ?? outputImages[0];
     const previewUrl = previewImage?.file_url;
+    const [loadedBlobUrl, setLoadedBlobUrl] = useState<string | null>(null);
+    const handleDownload = () => {
+        if (!loadedBlobUrl) return;
+        const link = document.createElement("a");
+        link.href = loadedBlobUrl;
+        link.download = `${generation.prompt.slice(0, 30)}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
     return (
         <article className="generation-card">
             <div className="generation-info">
@@ -37,7 +49,17 @@ export function GenerationCard({ generation, onImageClick }: Props) {
                         if (e.key === "Enter" || e.key === " ") onImageClick(previewUrl);
                     }}
                 >
-                    <AuthImage alt={generation.prompt} src={previewUrl} />
+                    <AuthImage alt={generation.prompt} src={previewUrl} onLoad={setLoadedBlobUrl}/>
+                    <button
+                        className="download-btn"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload();
+                        }}
+                        title="Скачать"
+                    >
+                        <DownloadBtnIcon/>
+                    </button>
                 </div>
             ) : (
                 <p className="generation-wait">Результат появится здесь после обработки...</p>

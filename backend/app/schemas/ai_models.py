@@ -6,5 +6,5 @@ class AIModelResponse(BaseModel):
     model_name: str
     title: str
     cost_credits: int
-    image_cost_credits: int
-    max_input_images: int
+    reference_cost_credits: int
+    max_input_assets: int

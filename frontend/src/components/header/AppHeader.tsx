@@ -11,7 +11,7 @@ type Props = {
     user: UserResponse | null;
     loading: boolean;
     isPaying: boolean;
-    onPay(): () => void;
+    onPay: () => void;
     tariffs: TariffResponse[];
     selectedTariffId: string;
     onTariffSelect: (tariffId: string) => void;

@@ -71,8 +71,8 @@ export function GenerationForm({
                         </select>
                     </label>
                     <div className="model-details">
-                        <span>Фото: до {selectedModel?.max_input_images ?? MAX_REFERENCE_IMAGES}</span>
-                        <span>Цена фото: {selectedModel?.image_cost_credits ?? 0} кр.</span>
+                        <span>Фото: до {selectedModel?.max_input_assets ?? MAX_REFERENCE_IMAGES}</span>
+                        <span>Цена фото: {selectedModel?.cost_credits ?? 0} кр.</span>
                     </div>
                 </div>
                 <div className="file-container">

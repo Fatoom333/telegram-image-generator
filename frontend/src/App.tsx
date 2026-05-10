@@ -33,7 +33,7 @@ export default function App() {
 	const [models, setModels] = useState<AIModelResponse[]>([]);
 	const [selectedModelKey, setSelectedModelKey] = useState("");
 	const [tariffs, setTariffs] = useState<TariffResponse[]>([]);
-	const [providers, setProviders] = useState<PaymentProviderResponse[]>([]);
+	const [_, setProviders] = useState<PaymentProviderResponse[]>([]);
 	const [selectedTariffId, setSelectedTariffId] = useState("");
 	const [selectedProvider, setSelectedProvider] = useState("");
 	const [generations, setGenerations] = useState<GenerationResponse[]>([]);
@@ -249,9 +249,6 @@ return (
 			tariffs={tariffs}
 			selectedTariffId={selectedTariffId}
         	onTariffSelect={setSelectedTariffId}
-        	providers={providers}
-        	selectedProvider={selectedProvider}
-        	onProviderSelect={setSelectedProvider}
 			error={paymentError}
         	isPaying={isPaying}
         	onPay={handlePay}

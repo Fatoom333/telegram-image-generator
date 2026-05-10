@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+App-mock.tsx
+main-mock.tsx
+mock-video.mp4

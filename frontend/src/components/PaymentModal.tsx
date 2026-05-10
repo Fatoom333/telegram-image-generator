@@ -1,6 +1,5 @@
-import type { PaymentProviderResponse, TariffResponse } from "../api/types"
+import type { TariffResponse } from "../api/types"
 import DownloadBtnIcon from "../assets/download_btn_icon.svg?react"
-import { ProviderSelector } from "./header/ProviderSelector";
 import { TariffSelector } from "./header/TariffSelector";
 import CoinIcon from "../assets/coin_btn_icon.svg?react"
 
@@ -8,9 +7,6 @@ type Props = {
     tariffs: TariffResponse[];
     selectedTariffId: string;
     onTariffSelect: (id: string) => void;
-    providers: PaymentProviderResponse[];
-    selectedProvider: string;
-    onProviderSelect: (id: string) => void;
     isPaying: boolean;
     onPay: () => void;
     onClose: () => void;
@@ -21,9 +17,6 @@ export function PaymentModal({
     tariffs, 
     selectedTariffId,
     onTariffSelect,
-    providers,
-    selectedProvider,
-    onProviderSelect,
     isPaying,
     onPay,
     onClose,
@@ -41,12 +34,6 @@ export function PaymentModal({
                         tariffs={tariffs}
                         selectedTariffId={selectedTariffId}
                         onTariffSelect={onTariffSelect}
-                    />
-                    <br/>
-                    <ProviderSelector
-                        providers={providers}
-                        selectedProvider={selectedProvider}
-                        onProviderSelect={onProviderSelect}
                     />
                     {error && <div className="alert error-alert">{error}</div>}
                     <button

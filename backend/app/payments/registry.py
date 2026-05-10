@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from app.payments.adapters.lava import LavaPaymentAdapter
-from app.payments.adapters.manual import ManualPaymentAdapter
+from app.payments.adapters.yookassa import YooKassaPaymentAdapter
 from app.payments.base import PaymentAdapter
 from app.services.exceptions import PaymentProviderNotFoundError
 
@@ -15,14 +14,13 @@ class PaymentProvider:
 class PaymentRegistry:
     def __init__(self) -> None:
         self._adapters: dict[str, PaymentAdapter] = {
-            ManualPaymentAdapter.provider_name: ManualPaymentAdapter(),
-            LavaPaymentAdapter.provider_name: LavaPaymentAdapter(),
+            YooKassaPaymentAdapter.provider_name: YooKassaPaymentAdapter(),
         }
 
         self._providers: dict[str, PaymentProvider] = {
-            "manual": PaymentProvider(
-                id="manual",
-                title="Ручное пополнение",
+            "yookassa": PaymentProvider(
+                id="yookassa",
+                title="ЮKassa",
             ),
         }
 

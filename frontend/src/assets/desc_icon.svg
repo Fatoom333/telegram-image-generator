@@ -40,20 +40,20 @@
      id="layer1"
      transform="translate(0.4062109,0.1722517)">
     <circle
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:5.29167;stroke-linejoin:round;stroke-opacity:1"
+       style="fill:none;fill-opacity:1;stroke:currentColor;stroke-width:5.29167;stroke-linejoin:round;stroke-opacity:1"
        id="path1"
        cx="34.239624"
        cy="34.473583"
        r="32" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:50.8px;font-family:'Bookman Old Style';-inkscape-font-specification:'Bookman Old Style Light';writing-mode:lr-tb;direction:ltr;fill:#000000;fill-opacity:1;stroke:none;stroke-width:5.29167;stroke-linejoin:round;stroke-opacity:1"
+       style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:50.8px;font-family:'Bookman Old Style';-inkscape-font-specification:'Bookman Old Style Light';writing-mode:lr-tb;direction:ltr;fill:currentColor;fill-opacity:1;stroke:none;stroke-width:5.29167;stroke-linejoin:round;stroke-opacity:1"
        x="21.88689"
        y="51.663231"
        id="text1"><tspan
          sodipodi:role="line"
          id="tspan1"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.8px;font-family:'Franklin Gothic Medium';-inkscape-font-specification:'Franklin Gothic Medium, ';fill:#000000;fill-opacity:1;stroke:none;stroke-width:5.29167;stroke-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.8px;font-family:'Franklin Gothic Medium';-inkscape-font-specification:'Franklin Gothic Medium, ';fill:currentColor;fill-opacity:1;stroke:none;stroke-width:5.29167;stroke-opacity:1"
          x="21.88689"
          y="51.663231">?</tspan></text>
   </g>

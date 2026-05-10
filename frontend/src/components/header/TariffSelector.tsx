@@ -3,17 +3,17 @@ import type { TariffResponse } from "../../api/types";
 type Props = {
     tariffs: TariffResponse[];
     selectedTariffId: string;
-    onSelect: (tariffId: string) => void;
+    onTariffSelect: (tariffId: string) => void;
 };
 
-export function TariffSelector({tariffs, selectedTariffId, onSelect}: Props) {
+export function TariffSelector({tariffs, selectedTariffId, onTariffSelect}: Props) {
     return (
         <div className="tariff">
             <label>
-                Тариф
+                <span>Тариф</span>
                 <select
                     className="tariff-selector"
-                    onChange={(event) => onSelect(event.target.value)}
+                    onChange={(event) => onTariffSelect(event.target.value)}
                     value={selectedTariffId}
                 > {tariffs.length === 0 ? (
                   <option value="">Тарифы не загружены</option>

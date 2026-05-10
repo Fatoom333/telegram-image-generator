@@ -73,14 +73,14 @@
      id="layer1"
      transform="translate(-26.433858,-27.197354)">
     <circle
-       style="fill:none;stroke:#000000;stroke-width:5.29167;stroke-linejoin:round;stroke-opacity:1"
+       style="fill:none;stroke:currentColor;stroke-width:5.29167;stroke-linejoin:round;stroke-opacity:1"
        id="path1"
        cx="61.079693"
        cy="61.843189"
        r="32" />
     <path
        sodipodi:type="star"
-       style="fill:none;stroke:#000000;stroke-width:5.29167;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;stroke:currentColor;stroke-width:5.29167;stroke-linejoin:miter;stroke-opacity:1"
        id="path2"
        inkscape:flatsided="false"
        sodipodi:sides="4"

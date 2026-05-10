@@ -7,7 +7,7 @@ from app.repositories.users import UserRepository
 
 
 class UserService:
-    INITIAL_CREDITS = 3
+    INITIAL_CREDITS = 30
 
     def __init__(self, session: AsyncSession) -> None:
         self._users = UserRepository(session)

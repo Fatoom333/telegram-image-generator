@@ -3,17 +3,17 @@ import type { PaymentProviderResponse } from "../../api/types";
 type Props = {
     providers: PaymentProviderResponse[];
     selectedProvider: string;
-    onSelect: (providerId: string) => void;
+    onProviderSelect: (providerId: string) => void;
 };
 
-export function ProviderSelector({providers, selectedProvider, onSelect}: Props) {
+export function ProviderSelector({providers, selectedProvider, onProviderSelect}: Props) {
     return (
         <div className="provider">
             <label>
-            Способ оплаты
+            <span>Способ оплаты</span>
             <select
                 className="provider-selector"
-                onChange={(event) => onSelect(event.target.value)}
+                onChange={(event) => onProviderSelect(event.target.value)}
                 value={selectedProvider}
             > {providers.length === 0 ? (
                 <option value="">Способы оплаты не загружены</option>

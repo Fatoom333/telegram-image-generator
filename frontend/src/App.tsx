@@ -185,7 +185,7 @@ const infoDescription = (
 	<>
 	Пополните баланс, напишите промпт и прикрепите фото‑исходники по желанию.
 	Нажмите кнопку <span className="bold">«Сгенерировать»</span> и дождитесь
-	результата в истории генераций. Каждая генерация стоит{" "}
+	результата в истории генераций.<br/> Каждая генерация стоит{" "}
 	<span className="bold">{selectedModel?.cost_credits ?? 10} кредитов</span>
 	. Баланс можно пополнить в любое время, нажав кнопку «Пополнить».
 	</>
@@ -196,7 +196,7 @@ return (
 	<BackgroundDecor />
 	
 	<AppHeader
-		title="<>Neiro<span>Banana</span></>"
+		title={<>Neiro<span>Banana</span></>}
 		subtitle="Генерация фото и видео на базе NanoBanana!"
 		logo={logoUrl}
 		user={user}

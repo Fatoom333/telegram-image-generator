@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from app.db.models.audit_log import AuditLog
     from app.db.models.credit_transaction import CreditTransaction
     from app.db.models.generation import Generation
-    from app.db.models.processed_update import ProcessedUpdate
     from app.db.models.purchase import Purchase
     from app.db.models.user_session import UserSession
 
@@ -62,9 +61,6 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
-    processed_updates: Mapped[list[ProcessedUpdate]] = relationship(
-        back_populates="user",
-    )
 
     audit_logs_as_actor: Mapped[list[AuditLog]] = relationship(
         back_populates="actor",

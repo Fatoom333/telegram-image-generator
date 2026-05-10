@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     nanobanano_location: str = "global"
     nanobanano_api_key: str | None = None
 
+    veo_project_id: str
+    veo_location: str = "us-central1"
+    veo_output_gcs_bucket: str
+    veo_output_gcs_prefix: str = "generated/video"
+
     lava_api_key: str
 
     model_config = SettingsConfigDict(

@@ -4,7 +4,7 @@ from pathlib import Path
 from google import genai
 from google.genai import types
 
-from app.ai.base import AIAdapter, GenerateImageInput, GenerateImageResult
+from app.ai.base import AIAdapter, GeneratedAsset, GenerateInput, GenerateResult
 from app.core.config import settings
 from app.storage.local import LocalFileStorage
 
@@ -30,16 +30,16 @@ class NanoBananoAdapter(AIAdapter):
         self._location = settings.nanobanano_location
         self._storage = LocalFileStorage()
 
-    async def generate_image(
-        self,
-        data: GenerateImageInput,
-    ) -> GenerateImageResult:
-        return await asyncio.to_thread(self._generate_image_sync, data)
+    async def generate(
+            self,
+            data: GenerateInput,
+    ) -> GenerateResult:
+        return await asyncio.to_thread(self._generate_sync, data)
 
-    def _generate_image_sync(
-        self,
-        data: GenerateImageInput,
-    ) -> GenerateImageResult:
+    def _generate_sync(
+            self,
+            data: GenerateInput,
+    ) -> GenerateResult:
         if data.model_name not in self._SUPPORTED_MODELS:
             raise ValueError(f"Unsupported NanoBanano model: {data.model_name}")
 
@@ -51,8 +51,8 @@ class NanoBananoAdapter(AIAdapter):
 
         parts: list[types.Part] = []
 
-        for input_image_path in data.input_image_paths:
-            private_path = self._storage.resolve_private_path(input_image_path)
+        for input_asset_path in data.input_asset_paths:
+            private_path = self._storage.resolve_private_path(input_asset_path)
             parts.append(
                 types.Part.from_bytes(
                     data=private_path.read_bytes(),
@@ -75,7 +75,7 @@ class NanoBananoAdapter(AIAdapter):
             ),
         )
 
-        output_image_paths: list[str] = []
+        assets: list[GeneratedAsset] = []
         image_index = 1
 
         for candidate in response.candidates or []:
@@ -89,28 +89,39 @@ class NanoBananoAdapter(AIAdapter):
 
                 mime_type = inline_data.mime_type or "image/png"
 
-                relative_path = self._storage.save_generation_output_image_bytes(
+                relative_path = self._storage.save_generation_output_asset_bytes(
                     generation_id=data.generation_id,
-                    image_bytes=inline_data.data,
+                    asset_bytes=inline_data.data,
+                    asset_type="image",
                     mime_type=mime_type,
                     index=image_index,
                 )
-                output_image_paths.append(relative_path)
+
+                assets.append(
+                    GeneratedAsset(
+                        file_path=relative_path,
+                        asset_type="image",
+                        mime_type=mime_type,
+                    )
+                )
+
                 image_index += 1
 
-        if not output_image_paths:
+        if not assets:
             raise RuntimeError("NanoBanano did not return any output images")
 
-        return GenerateImageResult(
-            output_image_paths=output_image_paths,
+        return GenerateResult(
+            assets=assets,
             provider_generation_id=None,
         )
 
     @classmethod
-    def _detect_mime_type(cls, file_path: Path) -> str:
+    def _detect_mime_type(
+            cls,
+            file_path: Path,
+    ) -> str:
         mime_type = cls._EXTENSION_TO_MIME_TYPE.get(file_path.suffix.lower())
         if mime_type is None:
-            raise ValueError(
-                f"Unsupported input image extension: {file_path.suffix}",
-            )
+            raise ValueError(f"Unsupported input image extension: {file_path.suffix}")
+
         return mime_type

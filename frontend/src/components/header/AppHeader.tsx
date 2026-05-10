@@ -1,6 +1,6 @@
 import { HeaderBranding } from "./HeaderBranding";
 import { HeaderAccount } from "./HeaderAccount";
-import type { PaymentProviderResponse, TariffResponse, UserResponse } from "../../api/types";
+import type { /* PaymentProviderResponse, TariffResponse, */ UserResponse } from "../../api/types";
 import type { ReactNode } from "react";
 
 
@@ -10,14 +10,7 @@ type Props = {
     logo: string;
     user: UserResponse | null;
     loading: boolean;
-    isPaying: boolean;
-    onPay: () => void;
-    tariffs: TariffResponse[];
-    selectedTariffId: string;
-    onTariffSelect: (tariffId: string) => void;
-    providers: PaymentProviderResponse[];
-    selectedProvider: string;
-    onProviderSelect: (providerId: string) => void;
+    onOpenPaymentModal: () => void;
 };
 
 export function AppHeader({
@@ -25,7 +18,9 @@ export function AppHeader({
     subtitle, 
     logo, 
     user, 
-    loading, 
+    loading,
+    onOpenPaymentModal,
+    /* 
     isPaying, 
     onPay, 
     tariffs, 
@@ -33,21 +28,15 @@ export function AppHeader({
     onTariffSelect,
     providers,
     selectedProvider,
-    onProviderSelect }: Props) {
+    onProviderSelect 
+    */}: Props) {
     return (
         <header className="app-header card">
             <HeaderBranding title={title} subtitle={subtitle} logo={logo}/>
             <HeaderAccount 
                 user={user} 
                 loading={loading}
-                tariffs={tariffs}
-                selectedTariffId={selectedTariffId}
-                onTariffSelect={onTariffSelect}
-                providers={providers}
-                selectedProvider={selectedProvider}
-                onProviderSelect={onProviderSelect}
-                isPaying={isPaying}
-                onPay={onPay}
+                onOpenPaymentModal={onOpenPaymentModal}
             />
         </header>
     );

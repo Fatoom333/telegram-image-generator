@@ -16,8 +16,8 @@ export type AIModelResponse = {
   model_name: string;
   title: string;
   cost_credits: number;
-  image_cost_credits: number;
-  max_input_images: number;
+  reference_cost_credits: number;
+  max_input_assets: number;
 };
 
 export type GenerationAssetResponse = {

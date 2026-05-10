@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.ai.base import GeneratedAsset
 from app.ai.model_catalog import ModelCatalog
 from app.db.models.generation import Generation, GenerationStatus
 from app.db.models.generation_image import GenerationImageRole
@@ -19,7 +20,10 @@ from app.services.exceptions import (
 
 
 class GenerationService:
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(
+            self,
+            session: AsyncSession,
+    ) -> None:
         self._users = UserRepository(session)
         self._generations = GenerationRepository(session)
         self._generation_images = GenerationImageRepository(session)
@@ -32,7 +36,7 @@ class GenerationService:
             prompt: str,
             provider: str | None = None,
             model_name: str | None = None,
-            input_images_cnt: int = 0,
+            input_assets_cnt: int = 0,
     ) -> Generation:
         normalized_prompt = prompt.strip()
 
@@ -44,7 +48,7 @@ class GenerationService:
             model_name=model_name,
         )
 
-        if input_images_cnt > selected_model.max_input_images:
+        if input_assets_cnt > selected_model.max_input_assets:
             raise TooManyInputImagesError
 
         user = await self._users.get_by_telegram_id(telegram_id)
@@ -58,14 +62,14 @@ class GenerationService:
         cost = self._model_catalog.calculate_cost(
             provider=selected_model.provider,
             model_name=selected_model.model_name,
-            input_images_cnt=input_images_cnt,
+            input_assets_cnt=input_assets_cnt,
         )
 
         generation = await self._generations.create(
             telegram_id=telegram_id,
             prompt=normalized_prompt,
             cost_credits=cost,
-            input_images_cnt=input_images_cnt,
+            input_images_cnt=input_assets_cnt,
             provider=selected_model.provider,
             model_name=selected_model.model_name,
             status=GenerationStatus.QUEUED,
@@ -75,15 +79,15 @@ class GenerationService:
             user=user,
             amount=cost,
             generation_id=generation.id,
-            reason="Image generation",
+            reason="Media generation",
         )
 
         return generation
 
     async def get_generation_for_user(
-        self,
-        generation_id: UUID,
-        telegram_id: int,
+            self,
+            generation_id: UUID,
+            telegram_id: int,
     ) -> Generation:
         generation = await self._generations.get_by_id_for_user(
             generation_id=generation_id,
@@ -96,8 +100,8 @@ class GenerationService:
         return generation
 
     async def get_generation(
-        self,
-        generation_id: UUID,
+            self,
+            generation_id: UUID,
     ) -> Generation:
         generation = await self._generations.get_by_id(generation_id)
 
@@ -107,10 +111,10 @@ class GenerationService:
         return generation
 
     async def list_user_generations(
-        self,
-        telegram_id: int,
-        limit: int = 20,
-        offset: int = 0,
+            self,
+            telegram_id: int,
+            limit: int = 20,
+            offset: int = 0,
     ) -> list[Generation]:
         user = await self._users.get_by_telegram_id(telegram_id)
 
@@ -124,26 +128,28 @@ class GenerationService:
         )
 
     async def mark_running(
-        self,
-        generation_id: UUID,
+            self,
+            generation_id: UUID,
     ) -> Generation:
         generation = await self.get_generation(generation_id)
-
         return await self._generations.set_running(generation)
 
     async def mark_succeeded(
-        self,
-        generation_id: UUID,
-        output_image_paths: list[str],
-        latency_ms: int,
+            self,
+            generation_id: UUID,
+            output_assets: list[GeneratedAsset],
+            latency_ms: int,
     ) -> Generation:
         generation = await self.get_generation(generation_id)
 
-        for file_path in output_image_paths:
+        for asset in output_assets:
             await self._generation_images.create(
                 generation_id=generation.id,
                 role=GenerationImageRole.OUTPUT,
-                file_path=file_path,
+                file_path=asset.file_path,
+                asset_type=asset.asset_type,
+                gcs_uri=asset.gcs_uri,
+                mime_type=asset.mime_type,
             )
 
         return await self._generations.set_succeeded(
@@ -152,12 +158,12 @@ class GenerationService:
         )
 
     async def mark_failed(
-        self,
-        generation_id: UUID,
-        error_code: str,
-        error_message: str,
-        latency_ms: int | None = None,
-        refund_credits: bool = True,
+            self,
+            generation_id: UUID,
+            error_code: str,
+            error_message: str,
+            latency_ms: int | None = None,
+            refund_credits: bool = True,
     ) -> Generation:
         generation = await self.get_generation(generation_id)
 
@@ -181,10 +187,26 @@ class GenerationService:
 
         return failed_generation
 
+    async def add_input_assets(
+            self,
+            generation_id: UUID,
+            input_asset_paths: list[str],
+    ) -> None:
+        generation = await self.get_generation(generation_id)
+
+        for file_path in input_asset_paths:
+            await self._generation_images.create(
+                generation_id=generation.id,
+                role=GenerationImageRole.INPUT,
+                file_path=file_path,
+                asset_type="image",
+                mime_type=self._guess_reference_image_mime_type(file_path),
+            )
+
     def _resolve_model(
-        self,
-        provider: str | None,
-        model_name: str | None,
+            self,
+            provider: str | None,
+            model_name: str | None,
     ):
         if provider is None and model_name is None:
             return self._model_catalog.get_default_model()
@@ -197,16 +219,19 @@ class GenerationService:
             model_name=model_name,
         )
 
-    async def add_input_images(
-            self,
-            generation_id: UUID,
-            input_image_paths: list[str],
-    ) -> None:
-        generation = await self.get_generation(generation_id)
+    @staticmethod
+    def _guess_reference_image_mime_type(
+            file_path: str,
+    ) -> str | None:
+        suffix = file_path.lower()
 
-        for file_path in input_image_paths:
-            await self._generation_images.create(
-                generation_id=generation.id,
-                role=GenerationImageRole.INPUT,
-                file_path=file_path,
-            )
+        if suffix.endswith((".jpg", ".jpeg")):
+            return "image/jpeg"
+
+        if suffix.endswith(".png"):
+            return "image/png"
+
+        if suffix.endswith(".webp"):
+            return "image/webp"
+
+        return None

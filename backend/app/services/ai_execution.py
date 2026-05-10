@@ -3,23 +3,26 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ai.base import GenerateImageInput
+from app.ai.base import GenerateInput
 from app.ai.registry import AIRegistry
-from app.repositories.generation_images import GenerationImageRepository
-from app.services.exceptions import AIProviderError, AIProviderNotFoundError, AIModelNotFoundError
-from app.services.generations import GenerationService
 from app.db.models.generation_image import GenerationImageRole
+from app.repositories.generation_images import GenerationImageRepository
+from app.services.exceptions import AIModelNotFoundError, AIProviderError, AIProviderNotFoundError
+from app.services.generations import GenerationService
 
 
 class AIExecutionService:
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(
+            self,
+            session: AsyncSession,
+    ) -> None:
         self._generation_service = GenerationService(session)
         self._generation_images = GenerationImageRepository(session)
         self._ai_registry = AIRegistry()
 
     async def execute_generation(
-        self,
-        generation_id: UUID,
+            self,
+            generation_id: UUID,
     ) -> None:
         started_at = perf_counter()
 
@@ -33,24 +36,24 @@ class AIExecutionService:
 
         await self._generation_service.mark_running(generation_id)
 
-        input_images = await self._generation_images.list_by_generation(
+        input_assets = await self._generation_images.list_inputs_by_generation(
             generation_id=generation.id,
         )
 
-        input_image_paths = [
-            image.file_path
-            for image in input_images
-            if image.role == GenerationImageRole.INPUT
+        input_asset_paths = [
+            asset.file_path
+            for asset in input_assets
+            if asset.role == GenerationImageRole.INPUT
         ]
 
         adapter = self._ai_registry.get_adapter(generation.provider)
 
         try:
-            result = await adapter.generate_image(
-                GenerateImageInput(
+            result = await adapter.generate(
+                GenerateInput(
                     generation_id=generation.id,
                     prompt=generation.prompt,
-                    input_image_paths=input_image_paths,
+                    input_asset_paths=input_asset_paths,
                     model_name=generation.model_name,
                 )
             )
@@ -71,6 +74,6 @@ class AIExecutionService:
 
         await self._generation_service.mark_succeeded(
             generation_id=generation.id,
-            output_image_paths=result.output_image_paths,
+            output_assets=result.assets,
             latency_ms=latency_ms,
         )

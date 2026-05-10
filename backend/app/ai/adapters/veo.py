@@ -50,13 +50,13 @@ class VeoAdapter(AIAdapter):
         operation = client.models.generate_videos(
             model=data.model_name,
             prompt=data.prompt,
-            image=self._build_input_image(data.input_asset_paths),
             config=types.GenerateVideosConfig(
                 number_of_videos=1,
                 duration_seconds=8,
                 aspect_ratio="16:9",
                 enhance_prompt=True,
                 output_gcs_uri=output_gcs_uri,
+                reference_images=self._build_reference_images(data.input_asset_paths),
             ),
         )
 
@@ -111,15 +111,21 @@ class VeoAdapter(AIAdapter):
     ) -> str:
         return f"gs://{self._bucket}/{self._prefix}/{data.generation_id}/"
 
-    def _build_input_image(
+    def _build_reference_images(
             self,
             input_asset_paths: list[str],
-    ) -> types.Image | None:
+    ) -> list[types.VideoGenerationReferenceImage] | None:
         if not input_asset_paths:
             return None
 
-        first_asset_path = self._storage.resolve_private_path(input_asset_paths[0])
-
-        return types.Image.from_file(
-            location=str(first_asset_path),
-        )
+        return [
+            types.VideoGenerationReferenceImage(
+                image=types.Image.from_file(
+                    location=str(
+                        self._storage.resolve_private_path(input_asset_path),
+                    ),
+                ),
+                reference_type=types.VideoGenerationReferenceType.ASSET,
+            )
+            for input_asset_path in input_asset_paths
+        ]

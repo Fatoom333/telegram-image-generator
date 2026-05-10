@@ -25,8 +25,6 @@ import { GenerationForm } from "./components/GenerationForm";
 import { AppDescription } from "./components/AppDescription";
 import { HistoryList } from "./components/history/HistoryList";
 import logoUrl from "./assets/small_dark_logo.png";
-import mockImageUrl from "./assets/mock-image.jpg";
-import mockVideoUrl from "./assets/mock-video.mp4";
 import { PaymentModal } from "./components/PaymentModal";
 
 export default function App() {
@@ -47,9 +45,9 @@ export default function App() {
 	const [error, setError] = useState<string | null>(null);
 	const [notice, setNotice] = useState<string | null>(null);
 	const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+	const [paymentError, setPaymentError] = useState<string | null>(null);
 	const openPaymentModal = () => { setPaymentError(null); setIsPaymentModalOpen(true); }
 	const closePaymentModal = () => { if(!isPaying) setIsPaymentModalOpen(false); };
-	const [paymentError, setPaymentError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (isPaymentModalOpen) { document.body.style.overflow = "hidden"; }
@@ -97,129 +95,11 @@ export default function App() {
 		}
 	}
 	
-	// useEffect(() => {
-	// 	window.Telegram?.WebApp?.ready?.();
-	// 	window.Telegram?.WebApp?.expand?.();
-	// 	void bootstrap();
-	// }, []);
-
 	useEffect(() => {
-  window.Telegram?.WebApp?.ready?.();
-  window.Telegram?.WebApp?.expand?.();
-
-  // Показываем интерфейс сразу с тестовыми данными
-  setUser({
-    telegram_id: 12345,
-    username: 'testuser',
-    first_name: 'Иван',
-    credits: 100,
-    is_banned: false,
-    is_admin: true,
-  });
-
-  setModels([
-    {
-      provider: 'openai',
-      model_name: 'dall-e-3',
-      title: 'DALL·E 3',
-      cost_credits: 10,
-      image_cost_credits: 0,
-      max_input_images: 0,
-    },
-    {
-      provider: 'replicate',
-      model_name: 'stable-diffusion',
-      title: 'Stable Diffusion',
-      cost_credits: 8,
-      image_cost_credits: 2,
-      max_input_images: 2,
-    },
-  ]);
-  setSelectedModelKey('openai:dall-e-3');
-
-  setTariffs([
-    { id: '1', title: '100 кредитов', amount_rub: 100, credits: 100 },
-    { id: '2', title: '500 кредитов', amount_rub: 400, credits: 500 },
-  ]);
-  setSelectedTariffId('1');
-
-  setProviders([
-    { id: 'yookassa', title: 'ЮKassa' },
-    { id: 'stripe', title: 'Stripe' },
-  ]);
-  setSelectedProvider('yookassa');
-
-  setGenerations([
-    {
-      id: 'gen-1',
-      telegram_id: 12345,
-      prompt: 'Космический кот',
-      status: 'succeeded',
-      provider: 'openai',
-      model_name: 'dall-e-3',
-      input_images_cnt: 0,
-      cost_credits: 10,
-      error_code: null,
-      error_message: null,
-      latency_ms: 5000,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      assets: [
-        {
-          id: 'img-1',
-          role: 'output',
-		  asset_type: 'image',
-          file_url: mockImageUrl,
-          mime_type: 'image/jpeg',
-          created_at: new Date().toISOString(),
-        },
-      ],
-    },
-    {
-      id: 'gen-2',
-      telegram_id: 12345,
-      prompt: 'Робот в стиле киберпанк',
-      status: 'processing',
-      provider: 'replicate',
-      model_name: 'stable-diffusion',
-      input_images_cnt: 0,
-      cost_credits: 8,
-      error_code: null,
-      error_message: null,
-      latency_ms: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      assets: [],
-    },
-	{
-      id: 'gen-3',
-      telegram_id: 12345,
-      prompt: 'Я робот момент',
-      status: 'succeeded',
-      provider: 'openai',
-      model_name: 'хз',
-      input_images_cnt: 0,
-      cost_credits: 10000,
-      error_code: null,
-      error_message: null,
-      latency_ms: 10,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      assets: [
-		{
-          id: 'vid-1',
-          role: 'output',
-		  asset_type: 'video',
-          file_url: mockVideoUrl,
-          mime_type: 'video/mp4',
-          created_at: new Date().toISOString(),
-        },
-	  ],
-    },
-  ]);
-
-  setIsBootLoading(false);
-}, []);
+		window.Telegram?.WebApp?.ready?.();
+		window.Telegram?.WebApp?.expand?.();
+		void bootstrap();
+	}, []);
 
 	async function refreshUser() {
 		const [nextUser, nextBalance] = await Promise.all([getMe(), getBalance()]);
@@ -235,18 +115,18 @@ export default function App() {
 		}
 	}
 	
-// 	useEffect(() => {
-// 		const hasActiveGeneration = generations.some((g) =>
-// 			["created", "queued", "processing", "pending", "running"].includes(
-// 			g.status.toLowerCase(),
-// 		),
-// 	);
-// 	if (!hasActiveGeneration) return;
-// 	const timerId = window.setInterval(() => {
-// 		void refreshGenerations();
-// 	}, POLL_INTERVAL_MS);
-// 	return () => window.clearInterval(timerId);
-// }, [generations]);
+	useEffect(() => {
+		const hasActiveGeneration = generations.some((g) =>
+			["created", "queued", "processing", "pending", "running"].includes(
+			g.status.toLowerCase(),
+		),
+	);
+	if (!hasActiveGeneration) return;
+	const timerId = window.setInterval(() => {
+		void refreshGenerations();
+	}, POLL_INTERVAL_MS);
+	return () => window.clearInterval(timerId);
+}, [generations]);
 
 function handleFilesChange(nextFiles: FileList | null) {
 	setFiles(Array.from(nextFiles ?? []).slice(0, MAX_REFERENCE_IMAGES));
@@ -316,7 +196,7 @@ const infoDescription = (
 	<>
 	Пополните баланс, напишите промпт и прикрепите фото‑исходники по желанию.
 	Нажмите кнопку <span className="bold">«Сгенерировать»</span> и дождитесь
-	результата в истории генераций.<br/>Каждая генерация стоит{" "}
+	результата в истории генераций.<br/> Каждая генерация стоит{" "}
 	<span className="bold">{selectedModel?.cost_credits ?? 10} кредитов</span>
 	. Баланс можно пополнить в любое время, нажав кнопку «Пополнить».
 	</>
@@ -363,7 +243,7 @@ return (
 			isBootLoading={isBootLoading}
 		/>
 	</div>
-
+	
 	{isPaymentModalOpen && (
 		<PaymentModal
 			tariffs={tariffs}
@@ -372,8 +252,8 @@ return (
         	providers={providers}
         	selectedProvider={selectedProvider}
         	onProviderSelect={setSelectedProvider}
-        	isPaying={isPaying}
 			error={paymentError}
+        	isPaying={isPaying}
         	onPay={handlePay}
         	onClose={closePaymentModal}
 		/>

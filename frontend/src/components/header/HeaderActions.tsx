@@ -4,16 +4,15 @@ import AdminIcon from "../../assets/admin_icon.svg?react"
 
 type Props = {
     user: UserResponse | null;
-    isPaying: boolean;
-    onPay: () => void;
+    onOpenPaymentModal: () => void;
 };
 
-export function HeaderActions({user, isPaying, onPay}: Props) {
+export function HeaderActions({user, onOpenPaymentModal}: Props) {
     return (
         <div className="header-actions">
-            <button className="pay-btn btn" disabled={isPaying} onClick={onPay} type="button">
+            <button className="pay-btn btn" onClick={onOpenPaymentModal} type="button">
                 <CoinBtnIcon/>
-                {isPaying ? "..." : "Пополнить"}
+                Пополнить
             </button>
             { user?.is_admin === true && (
                 <button 

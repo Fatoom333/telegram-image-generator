@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import enum
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String, func
@@ -14,6 +13,7 @@ from app.db.base import Base
 
 if TYPE_CHECKING:
     from app.db.models.generation import Generation
+
 
 class GenerationImageRole(str, enum.Enum):
     INPUT = "input"
@@ -28,21 +28,27 @@ class GenerationImage(Base):
         primary_key=True,
         default=uuid4,
     )
-
     generation_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         ForeignKey("generations.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
-
     role: Mapped[GenerationImageRole] = mapped_column(
         Enum(GenerationImageRole, name="generation_image_role"),
         nullable=False,
         index=True,
     )
 
+    asset_type: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+        default="image",
+        index=True,
+    )
+
     file_path: Mapped[str] = mapped_column(String(1000), nullable=False)
+    gcs_uri: Mapped[str | None] = mapped_column(String(1000), nullable=True)
 
     telegram_file_id: Mapped[str | None] = mapped_column(String(512), nullable=True)
     mime_type: Mapped[str | None] = mapped_column(String(100), nullable=True)

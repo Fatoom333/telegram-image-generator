@@ -20,7 +20,6 @@ async def generate_image(
 class WorkerSettings:
     redis_settings = get_arq_redis_settings()
     functions = [generate_image]
-
     max_jobs = 5
-    job_timeout = 300
+    job_timeout = 900
     retry_jobs = False

@@ -47,7 +47,7 @@ export function GenerationForm({
                     id="prompt"
                     maxLength={2000}
                     onChange={(event) => onPromptChange(event.target.value)}
-                    placeholder="Введите промпт... (Например: Акула танцует танго)"
+                    placeholder="Введите промпт... (Например: Банан танцует танго)"
                     value={prompt}
                 />
                 <div className="form-grid">

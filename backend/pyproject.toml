@@ -21,6 +21,7 @@ dependencies = [
     "ruff>=0.6.0",
     "mypy>=1.11.0",
     "google-genai>=1.51.0",
+    "google-cloud-storage>=2.18.0",
 ]
 
 [project.optional-dependencies]

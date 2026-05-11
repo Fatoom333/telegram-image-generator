@@ -49,7 +49,7 @@ class GenerationService:
         )
 
         if input_assets_cnt > selected_model.max_input_assets:
-            raise TooManyInputImagesError
+            raise TooManyInputImagesError()
 
         user = await self._users.get_by_telegram_id(telegram_id)
 
@@ -167,6 +167,16 @@ class GenerationService:
     ) -> Generation:
         generation = await self.get_generation(generation_id)
 
+        should_refund = (
+                refund_credits
+                and generation.status not in {
+                    GenerationStatus.FAILED,
+                    GenerationStatus.SUCCEEDED,
+                    GenerationStatus.CANCELED,
+                }
+                and generation.cost_credits > 0
+        )
+
         failed_generation = await self._generations.set_failed(
             generation=generation,
             error_code=error_code,
@@ -174,16 +184,17 @@ class GenerationService:
             latency_ms=latency_ms,
         )
 
-        if refund_credits and generation.cost_credits > 0:
-            user = await self._users.get_by_telegram_id(generation.telegram_id)
-
-            if user is not None:
-                await self._credits.refund(
-                    user=user,
-                    amount=generation.cost_credits,
-                    generation_id=generation.id,
-                    reason="Generation failed",
-                )
+        if should_refund:
+            await self._credits.refund(
+                telegram_id=generation.telegram_id,
+                amount=generation.cost_credits,
+                reason="Generation failed",
+                source="generation_failure",
+                payload={
+                    "generation_id": str(generation.id),
+                    "error_code": error_code,
+                },
+            )
 
         return failed_generation
 

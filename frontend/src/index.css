@@ -803,7 +803,7 @@ mark {
   clip: rect(0, 0, 0, 0);
 }
 
-.payment-fullscreen {
+.payment-page {
   position: fixed;
   top: 0;
   left: 0;
@@ -821,13 +821,13 @@ mark {
     radial-gradient(circle at 100% 100%, rgba(160, 70, 255, 1));
 }
 
-.payment-fullscreen-card {
+.payment-page-card {
   width: calc(100% - 20px);
   margin: 0 auto;
   max-width: none;
 }
 
-.payment-fullscreen-close {
+.payment-page-close {
   position: absolute;
   top: 6px;
   left: 16px;
@@ -840,7 +840,7 @@ mark {
   z-index: 1;
 }
 
-.payment-fullscreen-close svg {
+.payment-page-close svg {
   width: 20px;
   height: 20px;
   color: #fff;
@@ -848,24 +848,24 @@ mark {
   transform: rotate(90deg);
 }
 
-.payment-fullscreen-content {
+.payment-page-content {
   max-width: 480px;
   width: 100%;
   text-align: center;
 }
 
-.payment-fullscreen-content h2 {
+.payment-page-content h2 {
   margin-bottom: 30px;
 }
 
-.payment-fullscreen-content .pay-btn {
+.payment-page-content .pay-btn {
   width: 100%;
   margin-top: 24px;
 }
 
 .tariff-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-top: 10px;
 }
@@ -891,7 +891,7 @@ mark {
     transform: translateY(-2px);
 }
 
-.tariff-card--selected {
+.tariff-card-selected {
     border-color: var(--gold);
     box-shadow: 0 0 14px rgba(255, 212, 0, 0.45);
     background: rgba(255, 212, 0, 0.08);
@@ -911,6 +911,10 @@ mark {
 .tariff-card-credits {
     font-size: 0.85rem;
     color: var(--muted);
+}
+
+.tariff-card-span-2 {
+    grid-column: span 2;
 }
 
 .muted-text {

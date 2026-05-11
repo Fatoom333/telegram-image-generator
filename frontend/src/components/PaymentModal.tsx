@@ -1,5 +1,5 @@
 import type { TariffResponse } from "../api/types"
-import DownloadBtnIcon from "../assets/download_btn_icon.svg?react"
+// import DownloadBtnIcon from "../assets/download_btn_icon.svg?react"
 import { TariffSelector } from "./header/TariffSelector";
 import CoinIcon from "../assets/coin_btn_icon.svg?react"
 
@@ -19,15 +19,11 @@ export function PaymentModal({
     onTariffSelect,
     isPaying,
     onPay,
-    onClose,
     error
 }: Props) {
     return (
         <div className="payment-fullscreen">
             <div className="payment-fullscreen-card card">
-                <button className="payment-fullscreen-close" onClick={onClose} type="button">
-                    <DownloadBtnIcon/> {/* will rotate 90deg to make it "Go back" button*/}
-                </button>
                 <div className="payment-fullscreen-content">
                     <h2>Пополнение баланса</h2>
                     <TariffSelector

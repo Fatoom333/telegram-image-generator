@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from app.db.models.credit_transaction import CreditTransaction
     from app.db.models.generation import Generation
     from app.db.models.purchase import Purchase
-    from app.db.models.user_session import UserSession
 
 
 class User(Base):
@@ -24,7 +23,6 @@ class User(Base):
     first_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     credits: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    free_generations_used: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     is_banned: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
@@ -55,12 +53,6 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan",
     )
-
-    session: Mapped[UserSession | None] = relationship(
-        back_populates="user",
-        cascade="all, delete-orphan",
-    )
-
 
     audit_logs_as_actor: Mapped[list[AuditLog]] = relationship(
         back_populates="actor",

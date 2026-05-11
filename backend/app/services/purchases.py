@@ -83,7 +83,7 @@ class PurchaseService:
             status=PurchaseStatus.SUCCEEDED,
         )
 
-        await self._credits.grant(
+        await self._credits.purchase(
             telegram_id=purchase.telegram_id,
             amount=purchase.credits,
             reason=f"Purchase {purchase.id}",

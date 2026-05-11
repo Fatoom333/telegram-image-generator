@@ -20,7 +20,6 @@ class GenerationImageRepository:
             file_path: str,
             asset_type: str = "image",
             gcs_uri: str | None = None,
-            telegram_file_id: str | None = None,
             mime_type: str | None = None,
     ) -> GenerationImage:
         image = GenerationImage(
@@ -29,7 +28,6 @@ class GenerationImageRepository:
             asset_type=asset_type,
             file_path=file_path,
             gcs_uri=gcs_uri,
-            telegram_file_id=telegram_file_id,
             mime_type=mime_type,
         )
 

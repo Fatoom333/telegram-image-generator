@@ -19,6 +19,12 @@ declare global {
         expand?: () => void;
         openLink?: (url: string) => void;
         showAlert?: (message: string) => void;
+        BackButton?: {
+          show: () => void;
+          hide: () => void;
+          onClick: (callback: () => void) => void;
+          offClick: (callback: () => void) => void;
+        }
       };
     };
   }

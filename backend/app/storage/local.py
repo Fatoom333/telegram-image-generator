@@ -5,19 +5,16 @@ from fastapi import UploadFile
 
 from app.core.config import BACKEND_DIR, settings
 
-
 MAX_REFERENCE_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
 
 ALLOWED_REFERENCE_IMAGE_MIME_TYPES = {
     "image/jpeg",
     "image/png",
-    "image/webp",
 }
 
 ASSET_MIME_TYPE_TO_EXTENSION = {
     "image/jpeg": ".jpg",
     "image/png": ".png",
-    "image/webp": ".webp",
     "video/mp4": ".mp4",
 }
 
@@ -27,10 +24,10 @@ class LocalFileStorage:
         self._storage_root = BACKEND_DIR / settings.storage_dir
 
     async def save_generation_reference_assets(
-        self,
-        generation_id: UUID,
-        files: list[UploadFile],
-        output_asset_type: str,
+            self,
+            generation_id: UUID,
+            files: list[UploadFile],
+            output_asset_type: str,
     ) -> list[str]:
         media_folder = self._get_media_folder(output_asset_type)
         generation_dir = self._get_generation_media_dir(
@@ -45,7 +42,18 @@ class LocalFileStorage:
             if file.content_type not in ALLOWED_REFERENCE_IMAGE_MIME_TYPES:
                 raise ValueError("Unsupported reference image type")
 
-            extension = self._get_reference_image_extension(file.filename)
+            content_type = file.content_type
+
+            if content_type is None:
+                raise ValueError("Missing reference image content type")
+
+            if content_type not in ALLOWED_REFERENCE_IMAGE_MIME_TYPES:
+                raise ValueError("Unsupported reference image type")
+
+            extension = ASSET_MIME_TYPE_TO_EXTENSION.get(content_type)
+
+            if extension is None:
+                raise ValueError("Unsupported reference image type")
             file_name = f"reference_{index}{extension}"
             file_path = generation_dir / file_name
 
@@ -66,12 +74,12 @@ class LocalFileStorage:
         return saved_paths
 
     def save_generation_output_asset_bytes(
-        self,
-        generation_id: UUID,
-        asset_bytes: bytes,
-        asset_type: str,
-        mime_type: str,
-        index: int,
+            self,
+            generation_id: UUID,
+            asset_bytes: bytes,
+            asset_type: str,
+            mime_type: str,
+            index: int,
     ) -> str:
         extension = ASSET_MIME_TYPE_TO_EXTENSION.get(mime_type)
         if extension is None:
@@ -95,8 +103,8 @@ class LocalFileStorage:
         )
 
     def resolve_private_path(
-        self,
-        relative_path: str,
+            self,
+            relative_path: str,
     ) -> Path:
         storage_root = self._storage_root.resolve()
         file_path = (storage_root / relative_path).resolve()
@@ -107,10 +115,10 @@ class LocalFileStorage:
         return file_path
 
     async def _save_file_with_size_limit(
-        self,
-        file: UploadFile,
-        file_path: Path,
-        max_size_bytes: int,
+            self,
+            file: UploadFile,
+            file_path: Path,
+            max_size_bytes: int,
     ) -> None:
         total_size = 0
 
@@ -131,24 +139,24 @@ class LocalFileStorage:
         await file.seek(0)
 
     def _get_generation_media_dir(
-        self,
-        media_folder: str,
-        generation_id: UUID,
+            self,
+            media_folder: str,
+            generation_id: UUID,
     ) -> Path:
         return self._storage_root / "generated" / media_folder / str(generation_id)
 
     @staticmethod
     def _build_relative_media_path(
-        media_folder: str,
-        generation_id: UUID,
-        file_name: str,
+            media_folder: str,
+            generation_id: UUID,
+            file_name: str,
     ) -> str:
         relative_path = Path("generated") / media_folder / str(generation_id) / file_name
         return str(relative_path).replace("\\", "/")
 
     @staticmethod
     def _get_media_folder(
-        asset_type: str,
+            asset_type: str,
     ) -> str:
         if asset_type == "image":
             return "image"
@@ -160,7 +168,7 @@ class LocalFileStorage:
 
     @staticmethod
     def _get_reference_image_extension(
-        filename: str | None,
+            filename: str | None,
     ) -> str:
         if not filename:
             return ".bin"

@@ -15,8 +15,8 @@ class CreditService:
         self._credits = CreditRepository(session)
 
     async def get_balance(
-        self,
-        telegram_id: int,
+            self,
+            telegram_id: int,
     ) -> int:
         user = await self._users.get_by_telegram_id(telegram_id)
 
@@ -26,10 +26,10 @@ class CreditService:
         return user.credits
 
     async def list_transactions(
-        self,
-        telegram_id: int,
-        limit: int = 50,
-        offset: int = 0,
+            self,
+            telegram_id: int,
+            limit: int = 50,
+            offset: int = 0,
     ) -> list[CreditTransaction]:
         user = await self._users.get_by_telegram_id(telegram_id)
 
@@ -43,11 +43,11 @@ class CreditService:
         )
 
     async def spend(
-        self,
-        user: User,
-        amount: int,
-        generation_id: UUID | None = None,
-        reason: str | None = None,
+            self,
+            user: User,
+            amount: int,
+            generation_id: UUID | None = None,
+            reason: str | None = None,
     ) -> None:
         if amount <= 0:
             raise ValueError("Spend amount must be positive")
@@ -64,11 +64,11 @@ class CreditService:
         )
 
     async def refund(
-        self,
-        user: User,
-        amount: int,
-        generation_id: UUID | None = None,
-        reason: str | None = None,
+            self,
+            user: User,
+            amount: int,
+            generation_id: UUID | None = None,
+            reason: str | None = None,
     ) -> None:
         if amount <= 0:
             raise ValueError("Refund amount must be positive")
@@ -82,10 +82,10 @@ class CreditService:
         )
 
     async def grant(
-        self,
-        telegram_id: int,
-        amount: int,
-        reason: str | None = None,
+            self,
+            telegram_id: int,
+            amount: int,
+            reason: str | None = None,
     ) -> None:
         if amount <= 0:
             raise ValueError("Grant amount must be positive")
@@ -102,11 +102,31 @@ class CreditService:
             reason=reason,
         )
 
+    async def purchase(
+            self,
+            telegram_id: int,
+            amount: int,
+            reason: str | None = None,
+    ) -> None:
+        if amount <= 0:
+            raise ValueError("Purchase amount must be positive")
+
+        user = await self._users.get_by_telegram_id(telegram_id)
+        if user is None:
+            raise UserNotFoundError
+
+        await self._credits.create_transaction(
+            user=user,
+            type=CreditTransactionType.PURCHASE,
+            amount=amount,
+            reason=reason,
+        )
+
     async def admin_adjust(
-        self,
-        telegram_id: int,
-        amount: int,
-        reason: str | None = None,
+            self,
+            telegram_id: int,
+            amount: int,
+            reason: str | None = None,
     ) -> None:
         if amount == 0:
             raise ValueError("Adjustment amount must not be zero")

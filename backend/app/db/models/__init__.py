@@ -4,7 +4,6 @@ from app.db.models.generation import Generation
 from app.db.models.generation_image import GenerationImage
 from app.db.models.purchase import Purchase
 from app.db.models.user import User
-from app.db.models.user_session import UserSession
 
 __all__ = [
     "AuditLog",
@@ -13,5 +12,4 @@ __all__ = [
     "GenerationImage",
     "Purchase",
     "User",
-    "UserSession",
 ]

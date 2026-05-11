@@ -39,11 +39,25 @@ class PurchaseRepository:
 
         return result.scalar_one_or_none()
 
+    async def get_by_provider_payment_id(
+            self,
+            provider: str,
+            provider_payment_id: str,
+    ) -> Purchase | None:
+        result = await self._session.execute(
+            select(Purchase).where(
+                Purchase.provider == provider,
+                Purchase.provider_payment_id == provider_payment_id,
+            )
+        )
+
+        return result.scalar_one_or_none()
+
     async def list_by_user(
-        self,
-        telegram_id: int,
-        limit: int = 20,
-        offset: int = 0,
+            self,
+            telegram_id: int,
+            limit: int = 20,
+            offset: int = 0,
     ) -> list[Purchase]:
         result = await self._session.execute(
             select(Purchase)
@@ -70,9 +84,9 @@ class PurchaseRepository:
         return purchase
 
     async def update_status(
-        self,
-        purchase: Purchase,
-        status: PurchaseStatus,
+            self,
+            purchase: Purchase,
+            status: PurchaseStatus,
     ) -> Purchase:
         purchase.status = status
 

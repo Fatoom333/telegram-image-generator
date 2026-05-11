@@ -49,8 +49,7 @@ class GenerationImage(Base):
 
     file_path: Mapped[str] = mapped_column(String(1000), nullable=False)
     gcs_uri: Mapped[str | None] = mapped_column(String(1000), nullable=True)
-
-    telegram_file_id: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    
     mime_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(

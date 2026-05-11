@@ -31,7 +31,7 @@ export function TariffSelector({tariffs, selectedTariffId, onTariffSelect}: Prop
                             >
                                 <span className="tariff-card-title">{tariff.title}</span>
                                 <span className="tariff-card-price">{tariff.amount_rub} ₽</span>
-                                <span className="tariff-card-credits">{tariff.credits} кр.</span>
+                                <span className="tariff-card-credits">{tariff.credits} кредитов</span>
                             </button>
                         );
                     })

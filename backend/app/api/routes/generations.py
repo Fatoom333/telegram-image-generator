@@ -26,7 +26,10 @@ from app.storage.local import LocalFileStorage
 
 router = APIRouter(prefix="/generations", tags=["generations"])
 
-MAX_REFERENCE_IMAGES = 4
+VEO_REFERENCE_IMAGE_MIME_TYPES = {
+    "image/jpeg",
+    "image/png",
+}
 
 
 @router.post("", response_model=GenerationResponse)
@@ -41,12 +44,6 @@ async def create_generation(
     images = images or []
     storage = LocalFileStorage()
     model_catalog = ModelCatalog()
-
-    if len(images) > MAX_REFERENCE_IMAGES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Too many reference images. Maximum is {MAX_REFERENCE_IMAGES}",
-        )
 
     try:
         async with session.begin():

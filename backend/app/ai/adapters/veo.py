@@ -176,47 +176,36 @@ class VeoAdapter(AIAdapter):
             data: GenerateInput,
             output_gcs_uri: str,
     ) -> types.GenerateVideosConfig:
-        reference_images = self._build_reference_images(data.input_asset_paths)
+        reference_images = self._build_reference_images(data)
 
-        if reference_images is None:
-            return types.GenerateVideosConfig(
-                number_of_videos=1,
-                duration_seconds=8,
-                aspect_ratio="16:9",
-                enhance_prompt=True,
-                output_gcs_uri=output_gcs_uri,
-            )
+        config_kwargs: dict[str, object] = {
+            "number_of_videos": 1,
+            "duration_seconds": 8,
+            "aspect_ratio": "16:9",
+            "enhance_prompt": True,
+            "output_gcs_uri": output_gcs_uri,
+        }
 
-        return types.GenerateVideosConfig(
-            number_of_videos=1,
-            duration_seconds=8,
-            aspect_ratio="16:9",
-            enhance_prompt=True,
-            output_gcs_uri=output_gcs_uri,
-            reference_images=reference_images,
-        )
+        if reference_images is not None:
+            config_kwargs["reference_images"] = reference_images
 
-    def _build_output_gcs_uri(
-            self,
-            data: GenerateInput,
-    ) -> str:
-        return f"gs://{self._bucket}/{self._prefix}/{data.generation_id}/"
+        return types.GenerateVideosConfig(**config_kwargs)
 
     def _build_reference_images(
             self,
-            input_asset_paths: list[str],
+            data: GenerateInput,
     ) -> list[types.VideoGenerationReferenceImage] | None:
-        if not input_asset_paths:
+        if not data.input_asset_paths:
             return None
 
-        if len(input_asset_paths) > self._MAX_REFERENCE_IMAGES:
+        if len(data.input_asset_paths) > self._MAX_REFERENCE_IMAGES:
             raise ValueError(
                 f"Veo supports up to {self._MAX_REFERENCE_IMAGES} reference images"
             )
 
         reference_images: list[types.VideoGenerationReferenceImage] = []
 
-        for input_asset_path in input_asset_paths:
+        for index, input_asset_path in enumerate(data.input_asset_paths, start=1):
             private_path = self._storage.resolve_private_path(input_asset_path)
             mime_type = self._guess_image_mime_type(private_path)
 
@@ -226,16 +215,58 @@ class VeoAdapter(AIAdapter):
                     f"{mime_type}. Supported: image/jpeg, image/png"
                 )
 
+            reference_gcs_uri = self._upload_reference_image_to_gcs(
+                data=data,
+                private_path=private_path,
+                mime_type=mime_type,
+                index=index,
+            )
+
             reference_images.append(
                 types.VideoGenerationReferenceImage(
-                    image=types.Image.from_file(
-                        location=str(private_path),
+                    image=types.Image(
+                        gcs_uri=reference_gcs_uri,
+                        mime_type=mime_type,
                     ),
                     reference_type=types.VideoGenerationReferenceType.ASSET,
                 )
             )
 
         return reference_images
+
+    def _upload_reference_image_to_gcs(
+            self,
+            data: GenerateInput,
+            private_path: Path,
+            mime_type: str,
+            index: int,
+    ) -> str:
+        if mime_type == "image/jpeg":
+            extension = ".jpg"
+        elif mime_type == "image/png":
+            extension = ".png"
+        else:
+            raise ValueError(f"Unsupported Veo reference image MIME type: {mime_type}")
+
+        reference_gcs_uri = (
+            f"gs://{self._bucket}/"
+            f"{self._prefix}/{data.generation_id}/references/reference_{index}{extension}"
+        )
+
+        self._gcs.upload_file_to_gcs_uri(
+            file_path=private_path,
+            gcs_uri=reference_gcs_uri,
+            content_type=mime_type,
+        )
+
+        return reference_gcs_uri
+
+    def _build_output_gcs_uri(
+            self,
+            data: GenerateInput,
+    ) -> str:
+        return f"gs://{self._bucket}/{self._prefix}/{data.generation_id}/"
+
 
     def _guess_image_mime_type(
             self,

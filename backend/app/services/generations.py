@@ -49,7 +49,7 @@ class GenerationService:
         )
 
         if input_assets_cnt > selected_model.max_input_assets:
-            raise TooManyInputImagesError
+            raise TooManyInputImagesError()
 
         user = await self._users.get_by_telegram_id(telegram_id)
 

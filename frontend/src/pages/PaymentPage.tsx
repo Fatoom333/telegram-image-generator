@@ -11,6 +11,8 @@ export function PaymentPage() {
         if (!backBtn) return;
         backBtn.show();
         const handleBack = () => navigate("/");
+        backBtn.onClick(handleBack);
+        backBtn.show();
         return () => {
             backBtn.offClick(handleBack);
             backBtn.hide()

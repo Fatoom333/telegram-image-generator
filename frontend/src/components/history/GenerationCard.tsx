@@ -63,7 +63,9 @@ export function GenerationCard({ generation, onImageClick, onVideoClick }: Props
                         onLoad={setLoadedBlobUrl}
                     />
                     <button
+                        type="button"
                         className="download-btn"
+                        onPointerDown={(e) => e.stopPropagation()}
                         onClick={(e) => {
                             e.stopPropagation();
                             handleDownload();
